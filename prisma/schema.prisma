@@ -1,0 +1,239 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  CUSTOMER
+  PHOTOGRAPHER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum ConceptTier {
+  BASIC
+  STANDARD
+  PREMIUM
+}
+
+enum NotificationType {
+  BOOKING_UPDATE
+  NEW_MESSAGE
+  REMINDER
+  SYSTEM
+}
+
+enum MessageType {
+  TEXT
+  BOOKING_CARD
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  fullName     String   @map("full_name") @db.VarChar(100)
+  email        String   @unique @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  avatarUrl    String?  @default("default_user.png") @map("avatar_url")
+  role         UserRole @default(CUSTOMER)
+  
+  province     String?  @db.VarChar(100)
+  ward         String?  @db.VarChar(100)
+  
+  pushToken    String?  @map("push_token")
+  refreshToken String?  @map("refresh_token")
+  
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  photographer  Photographer?
+  notifications Notification[]
+  bookings      Booking[]       @relation("ClientBookings")
+  chatRooms     ChatRoom[]      @relation("ClientRooms")
+  messages      Message[]
+  aiSessions    AiGuidanceSession[]
+
+  @@map("users")
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  userId      Int              @map("user_id")
+  title       String           @db.VarChar(255)
+  content     String           @db.Text
+  type        NotificationType
+  referenceId Int?             @map("reference_id")
+  isRead      Boolean          @default(false) @map("is_read")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Photographer {
+  userId          Int      @id @map("user_id")
+  user            User     @relation(fields: [userId], references: [id])
+  bio             String?  @db.Text
+  experienceYears Int      @default(0) @map("experience_years")
+  ratingAvg       Float    @default(0.0) @map("rating_avg")
+  isVerified      Boolean  @default(false) @map("is_verified")
+  socialLinks     Json?    @map("social_links")
+  
+  concepts        Concept[]
+  schedules       PhotographerSchedule[]
+  chatRooms       ChatRoom[]
+  bookings        Booking[] @relation("PhotographerBookings")
+
+  @@map("photographers")
+}
+
+model Category {
+  id           Int       @id @default(autoincrement())
+  name         String    @db.VarChar(100)
+  thumbnailUrl String?   @map("thumbnail_url")
+  concepts     Concept[]
+
+  @@map("categories")
+}
+
+model Concept {
+  id                Int          @id @default(autoincrement())
+  photographerId    Int          @map("photographer_id")
+  categoryId        Int          @map("category_id")
+  name              String       @db.VarChar(150)
+  description       String?      @db.Text
+  tier              ConceptTier  @default(BASIC)
+  price             Decimal      @default(0) @db.Decimal(12, 2)
+  thumbnailUrl      String?      @map("thumbnail_url")
+  estimatedDuration Int?         @map("estimated_duration")
+  createdAt         DateTime     @default(now()) @map("created_at")
+
+  photographer      Photographer @relation(fields: [photographerId], references: [userId])
+  category          Category     @relation(fields: [categoryId], references: [id])
+  locations         ConceptLocation[]
+  photos            ConceptPhoto[]
+  bookings          Booking[]
+  chatRooms         ChatRoom[]
+
+  @@map("concepts")
+}
+model ConceptLocation {
+  id            Int     @id @default(autoincrement())
+  conceptId     Int     @map("concept_id")
+  province      String  @db.VarChar(100)
+  ward          String  @db.VarChar(100)
+  addressDetail String? @map("address_detail") @db.VarChar(255)
+
+  concept       Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  @@map("concept_locations")
+}
+
+model ConceptPhoto {
+  id        Int     @id @default(autoincrement())
+  conceptId Int     @map("concept_id")
+  imageUrl  String  @map("image_url")
+  concept   Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@map("concept_photos")
+}
+
+model Booking {
+  id                     Int           @id @default(autoincrement())
+  clientId               Int           @map("client_id")
+  photographerId         Int           @map("photographer_id")
+  conceptId              Int           @map("concept_id")
+  bookingDate            DateTime      @map("booking_date")
+  status                 BookingStatus @default(PENDING)
+  totalPrice             Decimal?      @map("total_price") @db.Decimal(12, 2)
+  note                   String?       @db.Text
+  isCompletedByCustomer  Boolean       @default(false) @map("is_completed_by_customer")
+  createdAt              DateTime      @default(now()) @map("created_at")
+
+  client                 User          @relation("ClientBookings", fields: [clientId], references: [id])
+  photographer           Photographer  @relation("PhotographerBookings", fields: [photographerId], references: [userId])
+  concept                Concept       @relation(fields: [conceptId], references: [id])
+  review                 Review?
+  schedules              PhotographerSchedule[]
+
+  @@map("bookings")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  bookingId Int      @unique @map("booking_id")
+  rating    Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+
+  @@map("reviews")
+}
+
+model ChatRoom {
+  id             Int      @id @default(autoincrement())
+  photographerId Int      @map("photographer_id")
+  clientId       Int      @map("client_id")
+  conceptId      Int?     @map("concept_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  client       User         @relation("ClientRooms", fields: [clientId], references: [id])
+  photographer Photographer @relation(fields: [photographerId], references: [userId])
+  concept      Concept?     @relation(fields: [conceptId], references: [id])
+  messages     Message[]
+
+  @@map("chat_rooms")
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  chatRoomId Int      @map("chat_room_id")
+  senderId   Int      @map("sender_id")
+  type       MessageType @default(TEXT)
+  content    String   @db.Text
+  isRead     Boolean  @default(false) @map("is_read")
+  sentAt     DateTime @default(now()) @map("sent_at")
+
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  sender     User     @relation(fields: [senderId], references: [id])
+
+  @@map("messages")
+}
+
+model PhotographerSchedule {
+  id             Int       @id @default(autoincrement())
+  photographerId Int       @map("photographer_id")
+  availableDate  DateTime  @map("available_date") @db.Date
+  startTime      DateTime? @map("start_time") @db.Time
+  endTime        DateTime? @map("end_time") @db.Time
+  bookingId      Int?      @map("booking_id")
+
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
+  booking        Booking?     @relation(fields: [bookingId], references: [id])
+
+  @@map("photographer_schedules")
+}
+
+model AiGuidanceSession {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @map("user_id")
+  contextType        String?  @map("context_type")
+  detectedEnvironment Json?    @map("detected_environment")
+  aiSuggestions      Json?    @map("ai_suggestions")
+  voiceScriptUsed    String?  @map("voice_script_used") @db.Text
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@map("ai_guidance_sessions")
+}

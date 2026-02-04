@@ -1,0 +1,33 @@
+name: Build and Deploy to Render
+
+on:
+  push:
+    branches: [ 'main']
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            DATABASE_URL=postgresql://johndoe:random@localhost:5432/mydb
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/photoguru-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/photoguru-api:${{ github.sha }}
+
+      - name: Trigger Render Deploy
+        run: |
+          curl -f -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
