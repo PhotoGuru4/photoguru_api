@@ -9,3 +9,10 @@ export const RECOMMENDATION_PRIORITY = {
   PROVINCE_MATCH: 1,
   OTHERS: 0,
 } as const;
+
+export const SORT_ORDER = {
+  ASC: 'asc',
+  DESC: 'desc',
+} as const;
+
+export type SortOrderType = (typeof SORT_ORDER)[keyof typeof SORT_ORDER];

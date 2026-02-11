@@ -22,3 +22,24 @@ export interface RecommendedConceptItem {
   categoryName: string;
   priority: number;
 }
+
+export interface ConceptItem {
+  id: number;
+  name: string;
+  price: number;
+  thumbnailUrl: string | null;
+  tier: ConceptTier;
+  photographerId: number;
+  photographerName: string;
+  categoryName: string;
+  locations: {
+    province: string;
+    ward: string;
+    addressDetail: string | null;
+  }[];
+}
+
+export interface SearchCursor {
+  id: number;
+  price: number;
+}

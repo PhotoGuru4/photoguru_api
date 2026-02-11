@@ -1,14 +1,18 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { GetRecommendationsDto } from './dto/get-recommendations.dto';
+import { GetConceptsDto } from './dto/get-concepts.dto';
 import { MESSAGES } from 'src/common/constants/messages';
 import {
   PAGINATION_CONFIG,
   RECOMMENDATION_PRIORITY,
+  SORT_ORDER,
 } from 'src/common/constants/global';
 import {
   RawConceptRecommendation,
   RecommendedConceptItem,
+  ConceptItem,
+  SearchCursor,
 } from './interfaces/concept-response.interface';
 import { Prisma } from '@prisma/client';
 
@@ -17,6 +21,132 @@ export class ConceptsService {
   private readonly logger = new Logger(ConceptsService.name);
 
   constructor(private prisma: PrismaService) {}
+
+  async findAll(query: GetConceptsDto) {
+    const {
+      keyword,
+      province,
+      ward,
+      sortByPrice,
+      limit = PAGINATION_CONFIG.DEFAULT_LIMIT,
+      cursor,
+    } = query;
+
+    let lastId: number | undefined;
+    let lastPrice: number | undefined;
+
+    if (cursor) {
+      try {
+        const decoded: SearchCursor = JSON.parse(
+          Buffer.from(cursor, 'base64').toString(),
+        );
+        lastId = decoded.id;
+        lastPrice = decoded.price;
+      } catch (error) {
+        throw new BadRequestException(
+          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
+        );
+      }
+    }
+
+    const andConditions: Prisma.ConceptWhereInput[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { name: { contains: keyword, mode: 'insensitive' } },
+          { description: { contains: keyword, mode: 'insensitive' } },
+        ],
+      });
+    }
+
+    if (province || ward) {
+      andConditions.push({
+        locations: {
+          some: {
+            province: province
+              ? { equals: province, mode: 'insensitive' }
+              : undefined,
+            ward: ward ? { equals: ward, mode: 'insensitive' } : undefined,
+          },
+        },
+      });
+    }
+
+    if (lastId && lastPrice !== undefined) {
+      if (sortByPrice) {
+        andConditions.push({
+          OR:
+            sortByPrice === SORT_ORDER.ASC
+              ? [
+                  { price: { gt: lastPrice } },
+                  { price: lastPrice, id: { gt: lastId } },
+                ]
+              : [
+                  { price: { lt: lastPrice } },
+                  { price: lastPrice, id: { gt: lastId } },
+                ],
+        });
+      } else {
+        andConditions.push({ id: { gt: lastId } });
+      }
+    }
+
+    const concepts = await this.prisma.concept.findMany({
+      where: { AND: andConditions },
+      take: limit + 1,
+      orderBy: [
+        ...(sortByPrice
+          ? [
+              {
+                price:
+                  sortByPrice === SORT_ORDER.ASC
+                    ? Prisma.SortOrder.asc
+                    : Prisma.SortOrder.desc,
+              },
+            ]
+          : []),
+        { id: Prisma.SortOrder.asc },
+      ],
+      include: {
+        photographer: { include: { user: { select: { fullName: true } } } },
+        category: { select: { name: true } },
+        locations: true,
+      },
+    });
+
+    const hasMore = concepts.length > limit;
+    const rawItems = hasMore ? concepts.slice(0, limit) : concepts;
+
+    const items: ConceptItem[] = rawItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: Number(item.price),
+      thumbnailUrl: item.thumbnailUrl,
+      tier: item.tier,
+      photographerId: item.photographerId,
+      photographerName: item.photographer.user.fullName,
+      categoryName: item.category.name,
+      locations: item.locations.map((loc) => ({
+        province: loc.province,
+        ward: loc.ward,
+        addressDetail: loc.addressDetail,
+      })),
+    }));
+
+    let nextCursor: string | null = null;
+    if (hasMore) {
+      const lastItem = items[items.length - 1];
+      nextCursor = Buffer.from(
+        JSON.stringify({ id: lastItem.id, price: lastItem.price }),
+      ).toString('base64');
+    }
+
+    return {
+      message: MESSAGES.CONCEPT.FETCH_SUCCESS,
+      data: { items, meta: { nextCursor, hasNextPage: hasMore } },
+    };
+  }
 
   async getRecommended(userId: number, query: GetRecommendationsDto) {
     const { limit = PAGINATION_CONFIG.DEFAULT_LIMIT, cursor } = query;
@@ -46,7 +176,9 @@ export class ConceptsService {
         lastId = decoded.id;
         lastPriority = decoded.priority;
       } catch (error) {
-        throw new BadRequestException('Invalid pagination cursor');
+        throw new BadRequestException(
+          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
+        );
       }
     }
 

@@ -3,6 +3,7 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 /** @type {import("eslint").FlatConfig[]} */
 export default [
@@ -26,6 +27,7 @@ export default [
       },
       globals: {
         ...globals.browser,
+        ...globals.node,
         process: 'readonly',
         console: 'readonly',
         Buffer: 'readonly',
@@ -43,18 +45,8 @@ export default [
       'unused-imports': unusedImports,
     },
     rules: {
-      indent: ['error', 2, { SwitchCase: 1 }],
       'linebreak-style': 'off',
-      quotes: ['error', 'single', { avoidEscape: true }],
-      semi: ['error', 'always'],
-      'no-multi-spaces': 'error',
-      'no-trailing-spaces': 'error',
-      'eol-last': ['error', 'always'],
-      'comma-dangle': ['error', 'always-multiline'],
-      'object-curly-spacing': ['error', 'always'],
-      'array-bracket-spacing': ['error', 'never'],
       'no-console': 'off',
-
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
@@ -62,26 +54,25 @@ export default [
         'warn',
         { vars: 'all', varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
       ],
-
       'no-var': 'error',
       'prefer-const': 'error',
       'object-shorthand': ['error', 'always'],
       'prefer-arrow-callback': 'error',
-      'no-multiple-empty-lines': ['error', { max: 1 }],
-      'max-len': ['error', { code: 120 }],
-      'arrow-parens': ['error', 'always'],
     },
   },
   {
-    files: ['tests/**/*.{ts,tsx,js,jsx}'],
+    files: ['tests/**/*.{ts,tsx,js,jsx}', 'src/**/*.spec.ts'],
     languageOptions: {
       globals: {
+        ...globals.jest,
         describe: 'readonly',
         it: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
         expect: 'readonly',
+        jest: 'readonly',
       },
     },
   },
+  eslintConfigPrettier,
 ];
