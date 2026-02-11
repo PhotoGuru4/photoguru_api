@@ -13,4 +13,8 @@ export const MESSAGES = {
     NOT_FOUND: 'User not found',
     UPDATE_SUCCESS: 'Profile updated successfully',
   },
+  CONCEPT: {
+    FETCH_RECOMMENDED_SUCCESS: 'Recommended concepts fetched successfully',
+    NOT_FOUND: 'Concept not found',
+  },
 } as const;
