@@ -12,5 +12,12 @@ export const MESSAGES = {
   USER: {
     NOT_FOUND: 'User not found',
     UPDATE_SUCCESS: 'Profile updated successfully',
+    FETCH_PROFILE_SUCCESS: 'User profile fetched successfully',
+  },
+  CONCEPT: {
+    FETCH_RECOMMENDED_SUCCESS: 'Recommended concepts fetched successfully',
+    FETCH_SUCCESS: 'Concepts fetched successfully',
+    NOT_FOUND: 'Concept not found',
+    INVALID_PAGINATION_CURSOR: 'Invalid pagination cursor',
   },
 } as const;
