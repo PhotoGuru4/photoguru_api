@@ -46,6 +46,8 @@ export class AuthService {
           password: hashedPassword,
           fullName: dto.fullName,
           role: dto.role,
+          province: dto.province,
+          ward: dto.ward,
         },
       });
       if (dto.role === UserRole.PHOTOGRAPHER) {
@@ -67,7 +69,13 @@ export class AuthService {
       data: {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
-        user: { id: newUser.id, email: newUser.email, role: newUser.role },
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          role: newUser.role,
+          province: newUser.province,
+          ward: newUser.ward,
+        },
       },
     };
   }
