@@ -35,10 +35,26 @@ export class RegisterDto {
   fullName: string;
 
   @ApiProperty({
-    description: 'Role of the user (CLIENT or PHOTOGRAPHER)',
+    description: 'Role of the user (CUSTOMER or PHOTOGRAPHER)',
     enum: UserRole,
-    example: 'CLIENT',
+    example: 'CUSTOMER',
   })
-  @IsEnum(UserRole, { message: 'Role must be either CLIENT or PHOTOGRAPHER' })
+  @IsEnum(UserRole, { message: 'Role must be either CUSTOMER or PHOTOGRAPHER' })
   role: UserRole;
+
+  @ApiProperty({
+    description: 'Province/City of the user',
+    example: 'Thành phố Hồ Chí Minh',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Province is required' })
+  province: string;
+
+  @ApiProperty({
+    description: 'Ward/District of the user',
+    example: 'Phường Thủ Dầu Một',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Ward is required' })
+  ward: string;
 }
