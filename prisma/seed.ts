@@ -701,6 +701,7 @@ async function main() {
       bio: 'Expert in wedding photography with natural light',
       experienceYears: 10,
       isVerified: true,
+      ratingAvg: 4.8,
     },
   });
   const p2 = await prisma.photographer.create({
@@ -709,6 +710,7 @@ async function main() {
       bio: 'Portrait specialist with studio lighting expertise',
       experienceYears: 5,
       isVerified: true,
+      ratingAvg: 4.5,
     },
   });
   const p3 = await prisma.photographer.create({
@@ -717,6 +719,7 @@ async function main() {
       bio: 'Street photography enthusiast capturing urban life',
       experienceYears: 3,
       isVerified: false,
+      ratingAvg: 4.2,
     },
   });
   const p4 = await prisma.photographer.create({
@@ -725,6 +728,7 @@ async function main() {
       bio: 'Fashion photographer for magazines and brands',
       experienceYears: 7,
       isVerified: true,
+      ratingAvg: 4.7,
     },
   });
   const p5 = await prisma.photographer.create({
@@ -733,6 +737,7 @@ async function main() {
       bio: 'Nature landscapes and wildlife specialist',
       experienceYears: 4,
       isVerified: false,
+      ratingAvg: 4.3,
     },
   });
   const p6 = await prisma.photographer.create({
@@ -741,6 +746,7 @@ async function main() {
       bio: 'Commercial product shots for e-commerce',
       experienceYears: 12,
       isVerified: true,
+      ratingAvg: 4.9,
     },
   });
   const p7 = await prisma.photographer.create({
@@ -749,6 +755,7 @@ async function main() {
       bio: 'Event photographer for corporate and parties',
       experienceYears: 6,
       isVerified: true,
+      ratingAvg: 4.6,
     },
   });
   const p8 = await prisma.photographer.create({
@@ -757,6 +764,7 @@ async function main() {
       bio: 'Family and kids portrait sessions',
       experienceYears: 2,
       isVerified: false,
+      ratingAvg: 4.1,
     },
   });
   const p9 = await prisma.photographer.create({
@@ -765,6 +773,7 @@ async function main() {
       bio: 'Sports action photography for events',
       experienceYears: 8,
       isVerified: true,
+      ratingAvg: 4.4,
     },
   });
   const p10 = await prisma.photographer.create({
@@ -773,6 +782,7 @@ async function main() {
       bio: 'Architecture and real estate photographer',
       experienceYears: 15,
       isVerified: true,
+      ratingAvg: 4.9,
     },
   });
   const p11 = await prisma.photographer.create({
@@ -781,6 +791,7 @@ async function main() {
       bio: 'Black and white fine art photography',
       experienceYears: 5,
       isVerified: false,
+      ratingAvg: 4.2,
     },
   });
   const p12 = await prisma.photographer.create({
@@ -789,6 +800,7 @@ async function main() {
       bio: 'Travel content creator and blogger',
       experienceYears: 3,
       isVerified: true,
+      ratingAvg: 4.5,
     },
   });
   const p13 = await prisma.photographer.create({
@@ -797,6 +809,7 @@ async function main() {
       bio: 'High fashion studio shoots',
       experienceYears: 9,
       isVerified: true,
+      ratingAvg: 4.7,
     },
   });
   const p14 = await prisma.photographer.create({
@@ -805,6 +818,7 @@ async function main() {
       bio: 'Pet portraits and animal photography',
       experienceYears: 4,
       isVerified: false,
+      ratingAvg: 4.3,
     },
   });
   const p15 = await prisma.photographer.create({
@@ -813,6 +827,7 @@ async function main() {
       bio: 'Cinematic lifestyle and couple sessions',
       experienceYears: 6,
       isVerified: true,
+      ratingAvg: 4.6,
     },
   });
   const p16 = await prisma.photographer.create({
@@ -821,6 +836,7 @@ async function main() {
       bio: 'Drone aerial photography for landscapes',
       experienceYears: 7,
       isVerified: true,
+      ratingAvg: 4.8,
     },
   });
   const p17 = await prisma.photographer.create({
@@ -829,6 +845,7 @@ async function main() {
       bio: 'Food styling and restaurant menus',
       experienceYears: 5,
       isVerified: false,
+      ratingAvg: 4.4,
     },
   });
   const p18 = await prisma.photographer.create({
@@ -837,6 +854,7 @@ async function main() {
       bio: 'Wedding pre-wedding romantic shoots',
       experienceYears: 11,
       isVerified: true,
+      ratingAvg: 4.9,
     },
   });
   const p19 = await prisma.photographer.create({
@@ -845,6 +863,7 @@ async function main() {
       bio: 'Newborn and maternity gentle sessions',
       experienceYears: 4,
       isVerified: true,
+      ratingAvg: 4.5,
     },
   });
   const p20 = await prisma.photographer.create({
@@ -853,6 +872,7 @@ async function main() {
       bio: 'Automotive car photography for ads',
       experienceYears: 8,
       isVerified: false,
+      ratingAvg: 4.6,
     },
   });
   const p21 = await prisma.photographer.create({
@@ -861,6 +881,7 @@ async function main() {
       bio: 'Macro close-up nature details',
       experienceYears: 6,
       isVerified: true,
+      ratingAvg: 4.7,
     },
   });
   const p22 = await prisma.photographer.create({
@@ -869,6 +890,7 @@ async function main() {
       bio: 'Night sky astrophotography',
       experienceYears: 9,
       isVerified: true,
+      ratingAvg: 4.8,
     },
   });
   const p23 = await prisma.photographer.create({
@@ -877,6 +899,7 @@ async function main() {
       bio: 'Concert and music event coverage',
       experienceYears: 5,
       isVerified: false,
+      ratingAvg: 4.4,
     },
   });
   const p24 = await prisma.photographer.create({
@@ -885,6 +908,7 @@ async function main() {
       bio: 'Boudoir empowering women portraits',
       experienceYears: 7,
       isVerified: true,
+      ratingAvg: 4.6,
     },
   });
   const p25 = await prisma.photographer.create({
@@ -893,6 +917,7 @@ async function main() {
       bio: 'Cultural festival documentary',
       experienceYears: 10,
       isVerified: true,
+      ratingAvg: 4.9,
     },
   });
   const p26 = await prisma.photographer.create({
@@ -901,6 +926,7 @@ async function main() {
       bio: 'Surreal conceptual art photography',
       experienceYears: 3,
       isVerified: false,
+      ratingAvg: 4.2,
     },
   });
   const p27 = await prisma.photographer.create({
@@ -909,6 +935,7 @@ async function main() {
       bio: 'Vintage film style emulation',
       experienceYears: 4,
       isVerified: true,
+      ratingAvg: 4.5,
     },
   });
   const p28 = await prisma.photographer.create({
@@ -917,6 +944,7 @@ async function main() {
       bio: 'Underwater ocean life shots',
       experienceYears: 12,
       isVerified: true,
+      ratingAvg: 4.8,
     },
   });
   const p29 = await prisma.photographer.create({
@@ -925,6 +953,7 @@ async function main() {
       bio: 'Children playful lifestyle sessions',
       experienceYears: 6,
       isVerified: false,
+      ratingAvg: 4.3,
     },
   });
   const p30 = await prisma.photographer.create({
@@ -933,6 +962,7 @@ async function main() {
       bio: 'Corporate headshots and branding',
       experienceYears: 8,
       isVerified: true,
+      ratingAvg: 4.7,
     },
   });
 
@@ -1032,10 +1062,12 @@ async function main() {
   const con1 = await prisma.concept.create({
     data: {
       name: 'Royal Wedding Elegance',
+      description: 'A grand and luxurious wedding photography package featuring high-end settings and professional lighting to capture your most significant life moments.',
       photographerId: p1.userId,
       categoryId: cat1.id,
       tier: ConceptTier.PREMIUM,
       price: 5000,
+      estimatedDuration: 480,
       thumbnailUrl: `${baseUrl}/con1`,
     },
   });
@@ -1046,374 +1078,460 @@ async function main() {
   const con2 = await prisma.concept.create({
     data: {
       name: 'Cyberpunk Urban Night',
+      description: 'Capture the futuristic neon glow of the city at night. Perfect for edgy portraits with vibrant colors and high-contrast urban backgrounds.',
       photographerId: p2.userId,
       categoryId: cat15.id,
       tier: ConceptTier.STANDARD,
       price: 800,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con2`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con2.id, province: 'Thành phố Hà Nội', ward: 'Phường Phúc Lợi' },
   });
+
   const con3 = await prisma.concept.create({
     data: {
       name: 'Minimalist Portrait Session',
+      description: 'Clean, simple, and timeless portraits focusing on the subject’s personality with professional studio lighting and neutral backgrounds.',
       photographerId: p3.userId,
       categoryId: cat2.id,
       tier: ConceptTier.BASIC,
       price: 300,
+      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con3`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con3.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Vân' },
   });
+
   const con4 = await prisma.concept.create({
     data: {
       name: 'High Fashion Runway',
+      description: 'Professional high-fashion shoot inspired by international runways. Includes creative directing and high-end editorial editing style.',
       photographerId: p4.userId,
       categoryId: cat4.id,
       tier: ConceptTier.PREMIUM,
       price: 2500,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con4`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con4.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
+
   const con5 = await prisma.concept.create({
     data: {
       name: 'Wild Nature Exploration',
+      description: 'Explore the beauty of the outdoors with this adventure-themed package. Ideal for hiking, camping, and mountain-view photography.',
       photographerId: p5.userId,
       categoryId: cat12.id,
       tier: ConceptTier.STANDARD,
       price: 600,
+      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con5`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con5.id, province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
   });
+
   const con6 = await prisma.concept.create({
     data: {
       name: 'Modern Architecture Views',
+      description: 'Highlighting the synergy between humans and urban design. This concept focuses on clean lines and modern skyscraper backdrops.',
       photographerId: p10.userId,
       categoryId: cat6.id,
       tier: ConceptTier.PREMIUM,
       price: 1500,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con6`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con6.id, province: 'Thành phố Hà Nội', ward: 'Phường Long Biên' },
   });
+
   const con7 = await prisma.concept.create({
     data: {
       name: 'Family Outdoor Picnic',
+      description: 'Capture heartwarming family bonding moments during a picnic. Natural, candid, and full of joy in a beautiful park setting.',
       photographerId: p8.userId,
       categoryId: cat7.id,
       tier: ConceptTier.BASIC,
       price: 200,
+      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con7`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con7.id, province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
   });
+
   const con8 = await prisma.concept.create({
     data: {
       name: 'Sports Stadium Action',
+      description: 'Dynamic sports photography capturing high-energy movement and athletic achievement at professional stadium locations.',
       photographerId: p9.userId,
       categoryId: cat8.id,
       tier: ConceptTier.STANDARD,
       price: 750,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con8`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con8.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
+
   const con9 = await prisma.concept.create({
     data: {
       name: 'Ethereal Forest Art',
+      description: 'Whimsical and magical photography deep in the forest. Includes smoke effects and props to create a fairy-tale atmosphere.',
       photographerId: p11.userId,
       categoryId: cat9.id,
       tier: ConceptTier.STANDARD,
       price: 900,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con9`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con9.id, province: 'Tỉnh Bình Dương', ward: 'Xã An Sơn' },
   });
+
   const con10 = await prisma.concept.create({
     data: {
       name: 'Gourmet Food Textures',
+      description: 'High-end food styling and photography for menus and social media, focusing on appetizing textures and vibrant colors.',
       photographerId: p6.userId,
       categoryId: cat10.id,
       tier: ConceptTier.STANDARD,
       price: 1100,
+      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con10`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con10.id, province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
   });
+
   const con11 = await prisma.concept.create({
     data: {
       name: 'Lost City Travel',
+      description: 'An exploratory travel concept at ancient ruins and historical sites. Capturing the sense of wonder and history.',
       photographerId: p12.userId,
       categoryId: cat11.id,
       tier: ConceptTier.BASIC,
       price: 450,
+      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con11`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con11.id, province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
   });
+
   const con12 = await prisma.concept.create({
     data: {
       name: 'K-Pop Style Studio',
+      description: 'Transform into an idol with Korean-inspired makeup and photography. High-energy, colorful, and trendy studio vibes.',
       photographerId: p13.userId,
       categoryId: cat4.id,
       tier: ConceptTier.PREMIUM,
       price: 3000,
+      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con12`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con12.id, province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
   });
+
   const con13 = await prisma.concept.create({
     data: {
       name: 'Tiny Macro Worlds',
+      description: 'Discover the hidden beauty of the microscopic world. Close-up photography of nature, jewelry, or intricate objects.',
       photographerId: p14.userId,
       categoryId: cat13.id,
       tier: ConceptTier.BASIC,
       price: 150,
+      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con13`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con13.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
+
   const con14 = await prisma.concept.create({
     data: {
       name: 'Supercar Sunset Drive',
+      description: 'Luxury automotive photography alongside exotic supercars during the golden hour for a sophisticated look.',
       photographerId: p15.userId,
       categoryId: cat14.id,
       tier: ConceptTier.STANDARD,
       price: 1200,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con14`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con14.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
+
   const con15 = await prisma.concept.create({
     data: {
       name: 'Vintage City Streets',
+      description: 'Nostalgic and emotional street photography with a film-like aesthetic, capturing the heartbeat of the old city.',
       photographerId: p1.userId,
       categoryId: cat3.id,
       tier: ConceptTier.STANDARD,
       price: 1000,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con15`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con15.id, province: 'Thành phố Hà Nội', ward: 'Phường Ô Chợ Dừa' },
   });
+
   const con16 = await prisma.concept.create({
     data: {
       name: 'Drone Aerial Views',
+      description: 'Stunning 4K drone photography providing a bird’s-eye perspective of landscapes, events, or luxury properties.',
       photographerId: p16.userId,
       categoryId: cat16.id,
       tier: ConceptTier.PREMIUM,
       price: 2200,
+      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con16`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con16.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
   });
+
   const con17 = await prisma.concept.create({
     data: {
       name: 'Food Styling Workshop',
+      description: 'Learn and capture the art of food arrangement. This interactive shoot focuses on storytelling through cuisine.',
       photographerId: p17.userId,
       categoryId: cat10.id,
       tier: ConceptTier.STANDARD,
       price: 700,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con17`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con17.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
   });
+
   const con18 = await prisma.concept.create({
     data: {
       name: 'Pre-Wedding Romance',
+      description: 'A gentle and poetic pre-wedding concept at a serene hill location. Focused on natural light and couple intimacy.',
       photographerId: p18.userId,
       categoryId: cat1.id,
       tier: ConceptTier.PREMIUM,
       price: 2800,
+      estimatedDuration: 300,
       thumbnailUrl: `${baseUrl}/con18`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con18.id, province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
   });
+
   const con19 = await prisma.concept.create({
     data: {
       name: 'Newborn Gentle Poses',
+      description: 'Safely and patiently capturing the first days of a baby’s life with soft textures and peaceful studio setups.',
       photographerId: p19.userId,
       categoryId: cat20.id,
       tier: ConceptTier.BASIC,
       price: 250,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con19`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con19.id, province: 'Thành phố Hà Nội', ward: 'Phường Hồng Hà' },
   });
+
   const con20 = await prisma.concept.create({
     data: {
       name: 'Car Culture Showcase',
+      description: 'For the ultimate car enthusiast. Detailed shots of engine modifications, interior craftsmanship, and exterior styling.',
       photographerId: p20.userId,
       categoryId: cat14.id,
       tier: ConceptTier.STANDARD,
       price: 1300,
+      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con20`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con20.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
   });
+
   const con21 = await prisma.concept.create({
     data: {
       name: 'Macro Flower Details',
+      description: 'Intricate floral photography exploring the fine details of petals and dewdrops. Vibrant, natural, and artistic.',
       photographerId: p21.userId,
       categoryId: cat13.id,
       tier: ConceptTier.BASIC,
       price: 180,
+      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con21`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con21.id, province: 'Tỉnh Đồng Nai', ward: 'Phường Đồng Xoài' },
   });
+
   const con22 = await prisma.concept.create({
     data: {
       name: 'Night Sky Stars',
+      description: 'Astro-photography capturing the Milky Way and constellations. Specialized long-exposure equipment included.',
       photographerId: p22.userId,
       categoryId: cat15.id,
       tier: ConceptTier.STANDARD,
       price: 950,
+      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con22`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con22.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Cẩm Lệ' },
   });
+
   const con23 = await prisma.concept.create({
     data: {
       name: 'Concert Live Energy',
+      description: 'High-speed photography capturing the thrill of a live music performance. Specialized for low-light stage lighting.',
       photographerId: p23.userId,
       categoryId: cat26.id,
       tier: ConceptTier.PREMIUM,
       price: 1800,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con23`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con23.id, province: 'Thành phố Hà Nội', ward: 'Phường Phú Thượng' },
   });
+
   const con24 = await prisma.concept.create({
     data: {
       name: 'Boudoir Confidence Boost',
+      description: 'A discreet and empowering session designed to celebrate physical beauty and self-confidence in a private setting.',
       photographerId: p24.userId,
       categoryId: cat25.id,
       tier: ConceptTier.STANDARD,
       price: 1100,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con24`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con24.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
   });
+
   const con25 = await prisma.concept.create({
     data: {
       name: 'Festival Cultural Vibes',
+      description: 'Documenting the vibrant energy and cultural traditions of regional festivals with colorful and high-action shots.',
       photographerId: p25.userId,
       categoryId: cat27.id,
       tier: ConceptTier.PREMIUM,
       price: 2000,
+      estimatedDuration: 300,
       thumbnailUrl: `${baseUrl}/con25`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con25.id, province: 'Tỉnh Quảng Ninh', ward: 'Phường Hà Tu' },
   });
+
   const con26 = await prisma.concept.create({
     data: {
       name: 'Surreal Dream Scenes',
+      description: 'Creative and imaginative photography utilizing post-production to blend reality with dreamy, surreal elements.',
       photographerId: p26.userId,
       categoryId: cat28.id,
       tier: ConceptTier.STANDARD,
       price: 1400,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con26`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con26.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
   });
+
   const con27 = await prisma.concept.create({
     data: {
       name: 'Vintage Retro Style',
+      description: 'Bringing back the 90s aesthetic with retro props and color grading. Fun, nostalgic, and full of personality.',
       photographerId: p27.userId,
       categoryId: cat29.id,
       tier: ConceptTier.BASIC,
       price: 400,
+      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con27`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con27.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' },
   });
+
   const con28 = await prisma.concept.create({
     data: {
       name: 'Underwater Ocean Adventure',
+      description: 'A unique underwater session for the adventurous. Capturing ethereal and weightless shots in a beautiful oceanic setting.',
       photographerId: p28.userId,
       categoryId: cat17.id,
       tier: ConceptTier.PREMIUM,
       price: 3500,
+      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con28`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con28.id, province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
   });
+
   const con29 = await prisma.concept.create({
     data: {
       name: 'Children Playful Moments',
+      description: 'Natural and candid shots of children playing. Capturing pure joy and innocence without forced posing.',
       photographerId: p29.userId,
       categoryId: cat7.id,
       tier: ConceptTier.STANDARD,
       price: 500,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con29`,
     },
   });
   await prisma.conceptLocation.create({
     data: { conceptId: con29.id, province: 'Thành phố Hà Nội', ward: 'Phường Kim Mã' },
   });
+
   const con30 = await prisma.concept.create({
     data: {
       name: 'Corporate Branding Shots',
+      description: 'Professional imagery for business leaders and brands. High-quality portraits for press releases and websites.',
       photographerId: p30.userId,
       categoryId: cat23.id,
       tier: ConceptTier.PREMIUM,
       price: 2200,
+      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con30`,
     },
   });
