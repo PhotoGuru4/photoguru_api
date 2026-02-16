@@ -13,8 +13,11 @@ import {
   RecommendedConceptItem,
   ConceptItem,
   SearchCursor,
+  RelatedCursor,
+  ConceptDetailResponse,
 } from './interfaces/concept-response.interface';
 import { Prisma } from '@prisma/client';
+import { GetRelatedConceptsDto } from './dto/get-related-concepts.dto';
 
 @Injectable()
 export class ConceptsService {
@@ -245,6 +248,114 @@ export class ConceptsService {
           hasNextPage: hasMore,
         },
       },
+    };
+  }
+
+  async findOne(id: number) {
+    const concept = await this.prisma.concept.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        photos: true,
+        locations: true,
+        photographer: {
+          include: {
+            user: {
+              select: { fullName: true, avatarUrl: true, province: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!concept) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
+
+    const data: ConceptDetailResponse = {
+      id: concept.id,
+      name: concept.name,
+      description: concept.description,
+      price: Number(concept.price),
+      estimatedDuration: concept.estimatedDuration,
+      tier: concept.tier,
+      thumbnailUrl: concept.thumbnailUrl,
+      categoryName: concept.category.name,
+      photographer: {
+        id: concept.photographerId,
+        fullName: concept.photographer.user.fullName,
+        avatarUrl: concept.photographer.user.avatarUrl,
+        ratingAvg: concept.photographer.ratingAvg,
+        province: concept.photographer.user.province,
+        bio: concept.photographer.bio,
+      },
+      photos: concept.photos.map((p) => ({ id: p.id, imageUrl: p.imageUrl })),
+      locations: concept.locations.map((l) => ({
+        province: l.province,
+        ward: l.ward,
+        addressDetail: l.addressDetail,
+      })),
+    };
+
+    return { message: MESSAGES.CONCEPT.FETCH_SUCCESS, data };
+  }
+
+  async findRelated(id: number, query: GetRelatedConceptsDto) {
+    const { limit = PAGINATION_CONFIG.DEFAULT_LIMIT, cursor } = query;
+    const base = await this.prisma.concept.findUnique({
+      where: { id },
+      select: { locations: { select: { province: true } } },
+    });
+    if (!base) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
+    const provinces = base.locations.map((l) => l.province);
+    let lastId: number | undefined;
+    if (cursor) {
+      try {
+        const decoded: RelatedCursor = JSON.parse(
+          Buffer.from(cursor, 'base64').toString(),
+        );
+        lastId = decoded.id;
+      } catch (e) {
+        throw new BadRequestException(
+          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
+        );
+      }
+    }
+
+    const related = await this.prisma.concept.findMany({
+      where: {
+        id: { not: id },
+        locations: {
+          some: { province: { in: provinces, mode: 'insensitive' } },
+        },
+        ...(lastId ? { id: { gt: lastId } } : {}),
+      },
+      take: limit + 1,
+      orderBy: { id: 'asc' },
+      include: {
+        photographer: { include: { user: { select: { fullName: true } } } },
+        category: { select: { name: true } },
+      },
+    });
+
+    const hasMore = related.length > limit;
+    const items = (hasMore ? related.slice(0, limit) : related).map((r) => ({
+      id: r.id,
+      name: r.name,
+      price: Number(r.price),
+      thumbnailUrl: r.thumbnailUrl,
+      photographerName: r.photographer.user.fullName,
+      categoryName: r.category.name,
+    }));
+
+    let nextCursor: string | null = null;
+    if (hasMore) {
+      nextCursor = Buffer.from(
+        JSON.stringify({ id: items[items.length - 1].id }),
+      ).toString('base64');
+    }
+
+    return {
+      message: MESSAGES.CONCEPT.FETCH_SUCCESS,
+      data: { items, meta: { nextCursor, hasNextPage: hasMore } },
     };
   }
 }
