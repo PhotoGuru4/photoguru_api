@@ -15,6 +15,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { GetConceptsDto } from './dto/get-concepts.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { GetRelatedConceptsDto } from './dto/get-related-concepts.dto';
+
 interface RequestWithUser extends Request {
   user: JwtPayload;
 }
@@ -24,14 +25,16 @@ interface RequestWithUser extends Request {
 @Controller('concepts')
 export class ConceptsController {
   constructor(private readonly conceptsService: ConceptsService) {}
+
   @UseGuards(AtGuard)
   @Get()
   @ApiOperation({
     summary: 'Search concepts by keyword and filter by location',
   })
-  async findAll(@Query() query: GetConceptsDto) {
-    return this.conceptsService.findAll(query);
+  async findAll(@Req() req: RequestWithUser, @Query() query: GetConceptsDto) {
+    return this.conceptsService.findAll(req.user.sub, query);
   }
+
   @UseGuards(AtGuard)
   @Get('recommended')
   @ApiOperation({

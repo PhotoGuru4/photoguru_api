@@ -74,13 +74,33 @@ CREATE TABLE "concepts" (
     "category_id" INTEGER NOT NULL,
     "name" VARCHAR(150) NOT NULL,
     "description" TEXT,
-    "tier" "ConceptTier" NOT NULL DEFAULT 'BASIC',
-    "price" DECIMAL(12,2) NOT NULL DEFAULT 0,
     "thumbnail_url" TEXT,
-    "estimated_duration" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "concepts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "concept_packages" (
+    "id" SERIAL NOT NULL,
+    "concept_id" INTEGER NOT NULL,
+    "tier" "ConceptTier" NOT NULL DEFAULT 'BASIC',
+    "price" DECIMAL(12,2) NOT NULL,
+    "description" TEXT,
+    "estimated_duration" INTEGER,
+
+    CONSTRAINT "concept_packages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "concept_package_locations" (
+    "id" SERIAL NOT NULL,
+    "package_id" INTEGER NOT NULL,
+    "province" VARCHAR(100) NOT NULL,
+    "ward" VARCHAR(100) NOT NULL,
+    "address_detail" VARCHAR(255),
+
+    CONSTRAINT "concept_package_locations_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -196,6 +216,12 @@ ALTER TABLE "concepts" ADD CONSTRAINT "concepts_photographer_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "concepts" ADD CONSTRAINT "concepts_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "concept_packages" ADD CONSTRAINT "concept_packages_concept_id_fkey" FOREIGN KEY ("concept_id") REFERENCES "concepts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "concept_package_locations" ADD CONSTRAINT "concept_package_locations_package_id_fkey" FOREIGN KEY ("package_id") REFERENCES "concept_packages"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "concept_locations" ADD CONSTRAINT "concept_locations_concept_id_fkey" FOREIGN KEY ("concept_id") REFERENCES "concepts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
