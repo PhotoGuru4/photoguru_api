@@ -8,16 +8,15 @@ import {
   RECOMMENDATION_PRIORITY,
   SORT_ORDER,
 } from 'src/common/constants/global';
+import { Prisma } from '@prisma/client';
+import { GetRelatedConceptsDto } from './dto/get-related-concepts.dto';
 import {
   RawConceptRecommendation,
   RecommendedConceptItem,
   ConceptItem,
-  SearchCursor,
-  RelatedCursor,
+  CursorData,
   ConceptDetailResponse,
 } from './interfaces/concept-response.interface';
-import { Prisma } from '@prisma/client';
-import { GetRelatedConceptsDto } from './dto/get-related-concepts.dto';
 
 @Injectable()
 export class ConceptsService {
@@ -25,7 +24,65 @@ export class ConceptsService {
 
   constructor(private prisma: PrismaService) {}
 
-  async findAll(query: GetConceptsDto) {
+  private parseCursor(cursor?: string): CursorData | null {
+    if (!cursor) return null;
+    try {
+      return JSON.parse(Buffer.from(cursor, 'base64').toString());
+    } catch {
+      throw new BadRequestException(MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR);
+    }
+  }
+
+  private encodeCursor(data: CursorData): string {
+    return Buffer.from(JSON.stringify(data)).toString('base64');
+  }
+
+  private buildSingleLocationPrioritySql(
+    province: string | null,
+    ward: string | null,
+  ) {
+    if (province && ward) {
+      return Prisma.sql`
+        MAX(CASE 
+          WHEN loc.ward = ${ward} AND loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
+          WHEN loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
+        END)
+      `;
+    }
+    if (province) {
+      return Prisma.sql`
+        MAX(CASE 
+          WHEN loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
+        END)
+      `;
+    }
+    return Prisma.sql`${RECOMMENDATION_PRIORITY.OTHERS}`;
+  }
+
+  private buildArrayLocationPrioritySql(provinces: string[], wards: string[]) {
+    if (provinces.length > 0 && wards.length > 0) {
+      return Prisma.sql`
+        MAX(CASE 
+          WHEN loc.ward IN (${Prisma.join(wards)}) AND loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
+          WHEN loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
+        END)
+      `;
+    }
+    if (provinces.length > 0) {
+      return Prisma.sql`
+        MAX(CASE 
+          WHEN loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
+        END)
+      `;
+    }
+    return Prisma.sql`${RECOMMENDATION_PRIORITY.OTHERS}`;
+  }
+
+  async findAll(userId: number, query: GetConceptsDto) {
     const {
       keyword,
       province,
@@ -35,114 +92,125 @@ export class ConceptsService {
       cursor,
     } = query;
 
-    let lastId: number | undefined;
-    let lastPrice: number | undefined;
-
-    if (cursor) {
-      try {
-        const decoded: SearchCursor = JSON.parse(
-          Buffer.from(cursor, 'base64').toString(),
-        );
-        lastId = decoded.id;
-        lastPrice = decoded.price;
-      } catch (error) {
-        throw new BadRequestException(
-          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
-        );
-      }
-    }
-
-    const andConditions: Prisma.ConceptWhereInput[] = [];
-
-    if (keyword) {
-      andConditions.push({
-        OR: [
-          { name: { contains: keyword, mode: 'insensitive' } },
-          { description: { contains: keyword, mode: 'insensitive' } },
-        ],
-      });
-    }
-
-    if (province || ward) {
-      andConditions.push({
-        locations: {
-          some: {
-            province: province
-              ? { equals: province, mode: 'insensitive' }
-              : undefined,
-            ward: ward ? { equals: ward, mode: 'insensitive' } : undefined,
-          },
-        },
-      });
-    }
-
-    if (lastId && lastPrice !== undefined) {
-      if (sortByPrice) {
-        andConditions.push({
-          OR:
-            sortByPrice === SORT_ORDER.ASC
-              ? [
-                  { price: { gt: lastPrice } },
-                  { price: lastPrice, id: { gt: lastId } },
-                ]
-              : [
-                  { price: { lt: lastPrice } },
-                  { price: lastPrice, id: { gt: lastId } },
-                ],
-        });
-      } else {
-        andConditions.push({ id: { gt: lastId } });
-      }
-    }
-
-    const concepts = await this.prisma.concept.findMany({
-      where: { AND: andConditions },
-      take: limit + 1,
-      orderBy: [
-        ...(sortByPrice
-          ? [
-              {
-                price:
-                  sortByPrice === SORT_ORDER.ASC
-                    ? Prisma.SortOrder.asc
-                    : Prisma.SortOrder.desc,
-              },
-            ]
-          : []),
-        { id: Prisma.SortOrder.asc },
-      ],
-      include: {
-        photographer: { include: { user: { select: { fullName: true } } } },
-        category: { select: { name: true } },
-        locations: true,
-      },
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { province: true, ward: true },
     });
+    const targetProvince = province || user?.province || null;
+    const targetWard = ward || user?.ward || null;
+
+    const parsedCursor = this.parseCursor(cursor);
+    const lastId = parsedCursor?.id ?? null;
+    const lastMinPrice = parsedCursor?.minPrice ?? null;
+    const lastPriority = parsedCursor?.priority ?? null;
+
+    const searchCondition = keyword
+      ? Prisma.sql`AND (c.name ILIKE ${'%' + keyword + '%'} OR c.description ILIKE ${'%' + keyword + '%'})`
+      : Prisma.empty;
+
+    let paginationCondition = Prisma.empty;
+    if (lastPriority !== null && lastId !== null) {
+      if (sortByPrice === SORT_ORDER.ASC && lastMinPrice !== null) {
+        paginationCondition = Prisma.sql`
+          AND (
+            (priority < ${lastPriority}) OR
+            (priority = ${lastPriority} AND "minPrice" > ${lastMinPrice}) OR
+            (priority = ${lastPriority} AND "minPrice" = ${lastMinPrice} AND id > ${lastId})
+          )
+        `;
+      } else if (sortByPrice === SORT_ORDER.DESC && lastMinPrice !== null) {
+        paginationCondition = Prisma.sql`
+          AND (
+            (priority < ${lastPriority}) OR
+            (priority = ${lastPriority} AND "minPrice" < ${lastMinPrice}) OR
+            (priority = ${lastPriority} AND "minPrice" = ${lastMinPrice} AND id > ${lastId})
+          )
+        `;
+      } else {
+        paginationCondition = Prisma.sql`
+          AND (
+            (priority < ${lastPriority}) OR
+            (priority = ${lastPriority} AND id > ${lastId})
+          )
+        `;
+      }
+    }
+
+    const orderCondition =
+      sortByPrice === SORT_ORDER.ASC
+        ? Prisma.sql`ORDER BY priority DESC, "minPrice" ASC, id ASC`
+        : sortByPrice === SORT_ORDER.DESC
+          ? Prisma.sql`ORDER BY priority DESC, "minPrice" DESC, id ASC`
+          : Prisma.sql`ORDER BY priority DESC, id ASC`;
+
+    const priorityQuery = this.buildSingleLocationPrioritySql(
+      targetProvince,
+      targetWard,
+    );
+
+    const concepts = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
+      WITH ConceptData AS (
+        SELECT 
+          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.photographer_id as "photographerId",
+          u.full_name as "photographerName",
+          cat.name as "categoryName",
+          COALESCE(MIN(cp.price), 0) as "minPrice",
+          COALESCE(MAX(cp.price), 0) as "maxPrice",
+          ${priorityQuery} as priority
+        FROM concepts c
+        JOIN photographers p ON c.photographer_id = p.user_id
+        JOIN users u ON p.user_id = u.id
+        JOIN categories cat ON c.category_id = cat.id
+        LEFT JOIN concept_packages cp ON c.id = cp.concept_id
+        LEFT JOIN concept_locations loc ON c.id = loc.concept_id
+        WHERE 1=1 ${searchCondition}
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
+      )
+      SELECT * FROM ConceptData
+      WHERE 1=1 ${paginationCondition}
+      ${orderCondition}
+      LIMIT ${limit + 1}
+    `;
 
     const hasMore = concepts.length > limit;
     const rawItems = hasMore ? concepts.slice(0, limit) : concepts;
 
-    const items: ConceptItem[] = rawItems.map((item) => ({
-      id: item.id,
-      name: item.name,
-      price: Number(item.price),
-      thumbnailUrl: item.thumbnailUrl,
-      tier: item.tier,
-      photographerId: item.photographerId,
-      photographerName: item.photographer.user.fullName,
-      categoryName: item.category.name,
-      locations: item.locations.map((loc) => ({
-        province: loc.province,
-        ward: loc.ward,
-        addressDetail: loc.addressDetail,
-      })),
-    }));
+    let items: ConceptItem[] = [];
+    if (rawItems.length > 0) {
+      const conceptIds = rawItems.map((c) => c.id);
+      const locations = await this.prisma.conceptLocation.findMany({
+        where: { conceptId: { in: conceptIds } },
+      });
+
+      items = rawItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        minPrice: Number(item.minPrice),
+        maxPrice: Number(item.maxPrice),
+        thumbnailUrl: item.thumbnailUrl,
+        photographerId: item.photographerId,
+        photographerName: item.photographerName,
+        categoryName: item.categoryName,
+        priority: Number(item.priority),
+        locations: locations
+          .filter((l) => l.conceptId === item.id)
+          .map((l) => ({
+            province: l.province,
+            ward: l.ward,
+            addressDetail: l.addressDetail,
+          })),
+      }));
+    }
 
     let nextCursor: string | null = null;
-    if (hasMore) {
+    if (hasMore && items.length > 0) {
       const lastItem = items[items.length - 1];
-      nextCursor = Buffer.from(
-        JSON.stringify({ id: lastItem.id, price: lastItem.price }),
-      ).toString('base64');
+      nextCursor = this.encodeCursor({
+        id: lastItem.id,
+        minPrice: lastItem.minPrice,
+        priority: lastItem.priority,
+      });
     }
 
     return {
@@ -159,95 +227,76 @@ export class ConceptsService {
       select: { province: true, ward: true },
     });
 
-    const userProvince = user?.province ?? null;
-    const userWard = user?.ward ?? null;
+    const parsedCursor = this.parseCursor(cursor);
+    const lastId = parsedCursor?.id ?? null;
+    const lastPriority = parsedCursor?.priority ?? null;
 
-    let lastId = PAGINATION_CONFIG.INITIAL_ID;
-    let lastPriority = PAGINATION_CONFIG.INITIAL_PRIORITY;
-
-    if (cursor) {
-      try {
-        const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString());
-
-        if (
-          typeof decoded.id !== 'number' ||
-          typeof decoded.priority !== 'number'
-        ) {
-          throw new Error();
-        }
-
-        lastId = decoded.id;
-        lastPriority = decoded.priority;
-      } catch (error) {
-        throw new BadRequestException(
-          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
-        );
-      }
+    let paginationCondition = Prisma.empty;
+    if (lastPriority !== null && lastId !== null) {
+      paginationCondition = Prisma.sql`
+        AND (
+          (priority < ${lastPriority}) OR
+          (priority = ${lastPriority} AND id > ${lastId})
+        )
+      `;
     }
 
-    const concepts = await this.prisma.$queryRaw<
-      RawConceptRecommendation[]
-    >(Prisma.sql`
-      WITH ConceptPriorities AS (
+    const priorityQuery = this.buildSingleLocationPrioritySql(
+      user?.province || null,
+      user?.ward || null,
+    );
+
+    const concepts = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
+      WITH ConceptData AS (
         SELECT 
-          c.id, c.name, c.price, c.thumbnail_url as "thumbnailUrl", 
-          c.tier, c.photographer_id as "photographerId",
+          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.photographer_id as "photographerId",
           u.full_name as "photographerName",
           cat.name as "categoryName",
-          MAX(CASE 
-            WHEN ${userWard} IS NOT NULL 
-            AND ${userProvince} IS NOT NULL AND loc.ward = ${userWard} 
-            AND loc.province = ${userProvince} THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
-            WHEN ${userProvince} IS NOT NULL 
-            AND loc.province = ${userProvince} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
-            ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
-          END) as priority
+          COALESCE(MIN(cp.price), 0) as "minPrice",
+          COALESCE(MAX(cp.price), 0) as "maxPrice",
+          ${priorityQuery} as priority
         FROM concepts c
         JOIN photographers p ON c.photographer_id = p.user_id
         JOIN users u ON p.user_id = u.id
         JOIN categories cat ON c.category_id = cat.id
+        LEFT JOIN concept_packages cp ON c.id = cp.concept_id
         LEFT JOIN concept_locations loc ON c.id = loc.concept_id
-        GROUP BY c.id, u.full_name, cat.name
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
       )
-      SELECT * FROM ConceptPriorities
-      WHERE (priority < ${lastPriority}) 
-         OR (priority = ${lastPriority} AND id > ${lastId})
+      SELECT * FROM ConceptData
+      WHERE 1=1 ${paginationCondition}
       ORDER BY priority DESC, id ASC
       LIMIT ${limit + 1}
-    `);
+    `;
 
-    let nextCursor: string | null = null;
     const hasMore = concepts.length > limit;
     const rawItems = hasMore ? concepts.slice(0, limit) : concepts;
 
     const items: RecommendedConceptItem[] = rawItems.map((item) => ({
       id: item.id,
       name: item.name,
-      price: Number(item.price),
+      minPrice: Number(item.minPrice),
+      maxPrice: Number(item.maxPrice),
       thumbnailUrl: item.thumbnailUrl,
-      tier: item.tier,
       photographerId: item.photographerId,
       photographerName: item.photographerName,
       categoryName: item.categoryName,
       priority: Number(item.priority),
     }));
 
-    if (hasMore) {
+    let nextCursor: string | null = null;
+    if (hasMore && items.length > 0) {
       const lastItem = items[items.length - 1];
-      nextCursor = Buffer.from(
-        JSON.stringify({ id: lastItem.id, priority: lastItem.priority }),
-      ).toString('base64');
+      nextCursor = this.encodeCursor({
+        id: lastItem.id,
+        priority: lastItem.priority,
+      });
     }
 
     return {
       message: MESSAGES.CONCEPT.FETCH_RECOMMENDED_SUCCESS,
-      data: {
-        items,
-        meta: {
-          nextCursor,
-          hasNextPage: hasMore,
-        },
-      },
+      data: { items, meta: { nextCursor, hasNextPage: hasMore } },
     };
   }
 
@@ -258,6 +307,7 @@ export class ConceptsService {
         category: true,
         photos: true,
         locations: true,
+        packages: true,
         photographer: {
           include: {
             user: {
@@ -270,13 +320,16 @@ export class ConceptsService {
 
     if (!concept) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
 
+    const prices = concept.packages.map((p) => Number(p.price));
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
     const data: ConceptDetailResponse = {
       id: concept.id,
       name: concept.name,
       description: concept.description,
-      price: Number(concept.price),
-      estimatedDuration: concept.estimatedDuration,
-      tier: concept.tier,
+      minPrice,
+      maxPrice,
       thumbnailUrl: concept.thumbnailUrl,
       categoryName: concept.category.name,
       photographer: {
@@ -287,6 +340,13 @@ export class ConceptsService {
         province: concept.photographer.user.province,
         bio: concept.photographer.bio,
       },
+      packages: concept.packages.map((pkg) => ({
+        id: pkg.id,
+        tier: pkg.tier,
+        price: Number(pkg.price),
+        description: pkg.description,
+        estimatedDuration: pkg.estimatedDuration,
+      })),
       photos: concept.photos.map((p) => ({ id: p.id, imageUrl: p.imageUrl })),
       locations: concept.locations.map((l) => ({
         province: l.province,
@@ -300,57 +360,82 @@ export class ConceptsService {
 
   async findRelated(id: number, query: GetRelatedConceptsDto) {
     const { limit = PAGINATION_CONFIG.DEFAULT_LIMIT, cursor } = query;
+
     const base = await this.prisma.concept.findUnique({
       where: { id },
-      select: { locations: { select: { province: true } } },
+      select: { locations: { select: { province: true, ward: true } } },
     });
     if (!base) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
-    const provinces = base.locations.map((l) => l.province);
-    let lastId: number | undefined;
-    if (cursor) {
-      try {
-        const decoded: RelatedCursor = JSON.parse(
-          Buffer.from(cursor, 'base64').toString(),
-        );
-        lastId = decoded.id;
-      } catch (e) {
-        throw new BadRequestException(
-          MESSAGES.CONCEPT.INVALID_PAGINATION_CURSOR,
-        );
-      }
+
+    const baseProvinces = base.locations.map((l) => l.province);
+    const baseWards = base.locations.map((l) => l.ward);
+
+    const parsedCursor = this.parseCursor(cursor);
+    const lastId = parsedCursor?.id ?? null;
+    const lastPriority = parsedCursor?.priority ?? null;
+
+    let paginationCondition = Prisma.empty;
+    if (lastPriority !== null && lastId !== null) {
+      paginationCondition = Prisma.sql`
+        AND (
+          (priority < ${lastPriority}) OR
+          (priority = ${lastPriority} AND id > ${lastId})
+        )
+      `;
     }
 
-    const related = await this.prisma.concept.findMany({
-      where: {
-        id: { not: id },
-        locations: {
-          some: { province: { in: provinces, mode: 'insensitive' } },
-        },
-        ...(lastId ? { id: { gt: lastId } } : {}),
-      },
-      take: limit + 1,
-      orderBy: { id: 'asc' },
-      include: {
-        photographer: { include: { user: { select: { fullName: true } } } },
-        category: { select: { name: true } },
-      },
-    });
+    const priorityQuery = this.buildArrayLocationPrioritySql(
+      baseProvinces,
+      baseWards,
+    );
+
+    const related = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
+      WITH ConceptData AS (
+        SELECT 
+          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.photographer_id as "photographerId",
+          u.full_name as "photographerName",
+          cat.name as "categoryName",
+          COALESCE(MIN(cp.price), 0) as "minPrice",
+          COALESCE(MAX(cp.price), 0) as "maxPrice",
+          ${priorityQuery} as priority
+        FROM concepts c
+        JOIN photographers p ON c.photographer_id = p.user_id
+        JOIN users u ON p.user_id = u.id
+        JOIN categories cat ON c.category_id = cat.id
+        LEFT JOIN concept_packages cp ON c.id = cp.concept_id
+        LEFT JOIN concept_locations loc ON c.id = loc.concept_id
+        WHERE c.id != ${id}
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
+      )
+      SELECT * FROM ConceptData
+      WHERE 1=1 ${paginationCondition}
+      ORDER BY priority DESC, id ASC
+      LIMIT ${limit + 1}
+    `;
 
     const hasMore = related.length > limit;
-    const items = (hasMore ? related.slice(0, limit) : related).map((r) => ({
+    const rawItems = hasMore ? related.slice(0, limit) : related;
+
+    const items: RecommendedConceptItem[] = rawItems.map((r) => ({
       id: r.id,
       name: r.name,
-      price: Number(r.price),
+      minPrice: Number(r.minPrice),
+      maxPrice: Number(r.maxPrice),
       thumbnailUrl: r.thumbnailUrl,
-      photographerName: r.photographer.user.fullName,
-      categoryName: r.category.name,
+      photographerId: r.photographerId,
+      photographerName: r.photographerName,
+      categoryName: r.categoryName,
+      priority: Number(r.priority),
     }));
 
     let nextCursor: string | null = null;
-    if (hasMore) {
-      nextCursor = Buffer.from(
-        JSON.stringify({ id: items[items.length - 1].id }),
-      ).toString('base64');
+    if (hasMore && items.length > 0) {
+      const lastItem = items[items.length - 1];
+      nextCursor = this.encodeCursor({
+        id: lastItem.id,
+        priority: lastItem.priority,
+      });
     }
 
     return {

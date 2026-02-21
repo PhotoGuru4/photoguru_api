@@ -1057,7 +1057,7 @@ async function main() {
   const cat30 = await prisma.category.create({
     data: { name: 'Event', thumbnailUrl: `${baseUrl}/event` },
   });
-  
+
   console.log('--- Seeding 30 Concepts & Locations ---');
   const con1 = await prisma.concept.create({
     data: {
@@ -1065,14 +1065,47 @@ async function main() {
       description: 'A grand and luxurious wedding photography package featuring high-end settings and professional lighting to capture your most significant life moments.',
       photographerId: p1.userId,
       categoryId: cat1.id,
-      tier: ConceptTier.PREMIUM,
-      price: 5000,
-      estimatedDuration: 480,
       thumbnailUrl: `${baseUrl}/con1`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 15000000,
+            estimatedDuration: 240,
+            description: '4 hours, 1 location',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Thủ Đầu Một',
+                },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 45000000,
+            estimatedDuration: 720,
+            description: 'Full day, 3 locations',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Thủ Đầu Một',
+                },
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Thủ Đầu Một' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con1.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Thủ Dầu Một' },
   });
 
   const con2 = await prisma.concept.create({
@@ -1081,14 +1114,40 @@ async function main() {
       description: 'Capture the futuristic neon glow of the city at night. Perfect for edgy portraits with vibrant colors and high-contrast urban backgrounds.',
       photographerId: p2.userId,
       categoryId: cat15.id,
-      tier: ConceptTier.STANDARD,
-      price: 800,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con2`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 3000000,
+            estimatedDuration: 90,
+            description: 'Night shoot, 1 costume',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Phúc Lợi' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 6500000,
+            estimatedDuration: 180,
+            description: 'Night shoot, 3 costumes, props',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Phúc Lợi' },
+          { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con2.id, province: 'Thành phố Hà Nội', ward: 'Phường Phúc Lợi' },
   });
 
   const con3 = await prisma.concept.create({
@@ -1097,14 +1156,40 @@ async function main() {
       description: 'Clean, simple, and timeless portraits focusing on the subject’s personality with professional studio lighting and neutral backgrounds.',
       photographerId: p3.userId,
       categoryId: cat2.id,
-      tier: ConceptTier.BASIC,
-      price: 300,
-      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con3`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1500000,
+            estimatedDuration: 60,
+            description: 'Standard studio headshot',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Vân' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 3500000,
+            estimatedDuration: 120,
+            description: 'Creative portrait with makeup',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Vân' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con3.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Vân' },
   });
 
   const con4 = await prisma.concept.create({
@@ -1113,14 +1198,40 @@ async function main() {
       description: 'Professional high-fashion shoot inspired by international runways. Includes creative directing and high-end editorial editing style.',
       photographerId: p4.userId,
       categoryId: cat4.id,
-      tier: ConceptTier.PREMIUM,
-      price: 2500,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con4`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 8000000,
+            estimatedDuration: 180,
+            description: 'Studio editorial',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 18000000,
+            estimatedDuration: 300,
+            description: 'Outdoor luxury location',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con4.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
 
   const con5 = await prisma.concept.create({
@@ -1129,14 +1240,36 @@ async function main() {
       description: 'Explore the beauty of the outdoors with this adventure-themed package. Ideal for hiking, camping, and mountain-view photography.',
       photographerId: p5.userId,
       categoryId: cat12.id,
-      tier: ConceptTier.STANDARD,
-      price: 600,
-      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con5`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 2500000,
+            estimatedDuration: 120,
+            description: 'Trekking path shoot',
+            locations: {
+              create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' }],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 5500000,
+            estimatedDuration: 240,
+            description: 'Peak mountain sunset shoot',
+            locations: {
+              create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phan Thiết' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
+          { province: 'Tỉnh Lâm Đồng', ward: 'Phường Phan Thiết' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con5.id, province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
   });
 
   const con6 = await prisma.concept.create({
@@ -1145,14 +1278,38 @@ async function main() {
       description: 'Highlighting the synergy between humans and urban design. This concept focuses on clean lines and modern skyscraper backdrops.',
       photographerId: p10.userId,
       categoryId: cat6.id,
-      tier: ConceptTier.PREMIUM,
-      price: 1500,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con6`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 6000000,
+            estimatedDuration: 120,
+            description: 'Downtown skyscrapers',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Long Biên' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 12000000,
+            estimatedDuration: 240,
+            description: 'Private luxury building access',
+            locations: {
+              create: [{ province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Long Biên' },
+          { province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con6.id, province: 'Thành phố Hà Nội', ward: 'Phường Long Biên' },
   });
 
   const con7 = await prisma.concept.create({
@@ -1161,30 +1318,77 @@ async function main() {
       description: 'Capture heartwarming family bonding moments during a picnic. Natural, candid, and full of joy in a beautiful park setting.',
       photographerId: p8.userId,
       categoryId: cat7.id,
-      tier: ConceptTier.BASIC,
-      price: 200,
-      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con7`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1800000,
+            estimatedDuration: 90,
+            description: 'Public park setting',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4000000,
+            estimatedDuration: 150,
+            description: 'Private resort garden',
+            locations: {
+              create: [{ province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
+        ],
+      },
     },
   });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con7.id, province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
-  });
-
   const con8 = await prisma.concept.create({
     data: {
       name: 'Sports Stadium Action',
       description: 'Dynamic sports photography capturing high-energy movement and athletic achievement at professional stadium locations.',
       photographerId: p9.userId,
       categoryId: cat8.id,
-      tier: ConceptTier.STANDARD,
-      price: 750,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con8`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 5000000,
+            estimatedDuration: 120,
+            description: 'Gym/Stadium shoot',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 9500000,
+            estimatedDuration: 180,
+            description: 'Professional action coverage',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Minh Thạnh' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Minh Thạnh' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con8.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
 
   const con9 = await prisma.concept.create({
@@ -1193,14 +1397,36 @@ async function main() {
       description: 'Whimsical and magical photography deep in the forest. Includes smoke effects and props to create a fairy-tale atmosphere.',
       photographerId: p11.userId,
       categoryId: cat9.id,
-      tier: ConceptTier.STANDARD,
-      price: 900,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con9`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 7500000,
+            estimatedDuration: 180,
+            description: 'Forest shoot with smoke props',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Long Hòa' }],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 14000000,
+            estimatedDuration: 300,
+            description: 'Full conceptual fairy tale theme',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Thanh An' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Long Hòa' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Thanh An' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con9.id, province: 'Tỉnh Bình Dương', ward: 'Xã An Sơn' },
   });
 
   const con10 = await prisma.concept.create({
@@ -1209,14 +1435,40 @@ async function main() {
       description: 'High-end food styling and photography for menus and social media, focusing on appetizing textures and vibrant colors.',
       photographerId: p6.userId,
       categoryId: cat10.id,
-      tier: ConceptTier.STANDARD,
-      price: 1100,
-      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con10`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 3500000,
+            estimatedDuration: 120,
+            description: '5 dishes, studio',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 8000000,
+            estimatedDuration: 240,
+            description: 'Full menu, on-site restaurant',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Hoàn Kiếm' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
+          { province: 'Thành phố Hà Nội', ward: 'Phường Hoàn Kiếm' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con10.id, province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
   });
 
   const con11 = await prisma.concept.create({
@@ -1225,14 +1477,38 @@ async function main() {
       description: 'An exploratory travel concept at ancient ruins and historical sites. Capturing the sense of wonder and history.',
       photographerId: p12.userId,
       categoryId: cat11.id,
-      tier: ConceptTier.BASIC,
-      price: 450,
-      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con11`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 2000000,
+            estimatedDuration: 120,
+            description: 'Temple ruins shoot',
+            locations: {
+              create: [
+                { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4500000,
+            estimatedDuration: 240,
+            description: 'Island & ruins adventure',
+            locations: {
+              create: [{ province: 'Tỉnh Khánh Hòa', ward: 'Xã Khánh Vĩnh' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
+          { province: 'Tỉnh Khánh Hòa', ward: 'Xã Khánh Vĩnh' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con11.id, province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
   });
 
   const con12 = await prisma.concept.create({
@@ -1241,30 +1517,80 @@ async function main() {
       description: 'Transform into an idol with Korean-inspired makeup and photography. High-energy, colorful, and trendy studio vibes.',
       photographerId: p13.userId,
       categoryId: cat4.id,
-      tier: ConceptTier.PREMIUM,
-      price: 3000,
-      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con12`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 5500000,
+            estimatedDuration: 180,
+            description: '1 outfit, idol makeup',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 12000000,
+            estimatedDuration: 300,
+            description: '3 outfits, music video style',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Thanh Khê' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Thanh Khê' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con12.id, province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
   });
 
   const con13 = await prisma.concept.create({
     data: {
       name: 'Tiny Macro Worlds',
-      description: 'Discover the hidden beauty of the microscopic world. Close-up photography of nature, jewelry, or intricate objects.',
+      description: 'Discover the hidden beauty of the microscopic world.',
       photographerId: p14.userId,
       categoryId: cat13.id,
-      tier: ConceptTier.BASIC,
-      price: 150,
-      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con13`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1200000,
+            estimatedDuration: 60,
+            description: 'Nature macro shoot',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 2800000,
+            estimatedDuration: 120,
+            description: 'Jewelry/Product macro',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con13.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
 
   const con14 = await prisma.concept.create({
@@ -1273,14 +1599,43 @@ async function main() {
       description: 'Luxury automotive photography alongside exotic supercars during the golden hour for a sophisticated look.',
       photographerId: p15.userId,
       categoryId: cat14.id,
-      tier: ConceptTier.STANDARD,
-      price: 1200,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con14`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 7000000,
+            estimatedDuration: 120,
+            description: 'Static shots, sunset',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 15000000,
+            estimatedDuration: 240,
+            description: 'Rolling shots, night drive',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Bến Cát',
+                },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bến Cát' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con14.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
   });
 
   const con15 = await prisma.concept.create({
@@ -1289,14 +1644,40 @@ async function main() {
       description: 'Nostalgic and emotional street photography with a film-like aesthetic, capturing the heartbeat of the old city.',
       photographerId: p1.userId,
       categoryId: cat3.id,
-      tier: ConceptTier.STANDARD,
-      price: 1000,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con15`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 2200000,
+            estimatedDuration: 90,
+            description: '35mm Film style',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Ô Chợ Dừa' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4800000,
+            estimatedDuration: 150,
+            description: 'Old Quarter exploration',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Xã Yên Xuân' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Ô Chợ Dừa' },
+          { province: 'Thành phố Hà Nội', ward: 'Xã Yên Xuân' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con15.id, province: 'Thành phố Hà Nội', ward: 'Phường Ô Chợ Dừa' },
   });
 
   const con16 = await prisma.concept.create({
@@ -1305,30 +1686,84 @@ async function main() {
       description: 'Stunning 4K drone photography providing a bird’s-eye perspective of landscapes, events, or luxury properties.',
       photographerId: p16.userId,
       categoryId: cat16.id,
-      tier: ConceptTier.PREMIUM,
-      price: 2200,
-      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con16`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 5000000,
+            estimatedDuration: 60,
+            description: 'Landscape photos',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 11000000,
+            estimatedDuration: 120,
+            description: 'Commercial video & photo',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Hòa Cường' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Hòa Cường' },
+        ],
+      },
     },
   });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con16.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
-  });
-
   const con17 = await prisma.concept.create({
     data: {
       name: 'Food Styling Workshop',
       description: 'Learn and capture the art of food arrangement. This interactive shoot focuses on storytelling through cuisine.',
       photographerId: p17.userId,
       categoryId: cat10.id,
-      tier: ConceptTier.STANDARD,
-      price: 700,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con17`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1500000,
+            estimatedDuration: 120,
+            description: 'Styling basics',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Bình Dương',
+                },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 3800000,
+            estimatedDuration: 240,
+            description: 'Pro lighting & styling',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Trừ Văn Thố' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Trừ Văn Thố' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con17.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
   });
 
   const con18 = await prisma.concept.create({
@@ -1337,30 +1772,75 @@ async function main() {
       description: 'A gentle and poetic pre-wedding concept at a serene hill location. Focused on natural light and couple intimacy.',
       photographerId: p18.userId,
       categoryId: cat1.id,
-      tier: ConceptTier.PREMIUM,
-      price: 2800,
-      estimatedDuration: 300,
       thumbnailUrl: `${baseUrl}/con18`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 12000000,
+            estimatedDuration: 300,
+            description: 'Half day, local hills',
+            locations: {
+              create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' }],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 28000000,
+            estimatedDuration: 600,
+            description: 'Full day, remote resort',
+            locations: {
+              create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Hàm Thắng' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
+          { province: 'Tỉnh Lâm Đồng', ward: 'Phường Hàm Thắng' },
+        ],
+      },
     },
   });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con18.id, province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' },
-  });
-
   const con19 = await prisma.concept.create({
     data: {
       name: 'Newborn Gentle Poses',
       description: 'Safely and patiently capturing the first days of a baby’s life with soft textures and peaceful studio setups.',
       photographerId: p19.userId,
       categoryId: cat20.id,
-      tier: ConceptTier.BASIC,
-      price: 250,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con19`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 3000000,
+            estimatedDuration: 180,
+            description: 'Home visit shoot',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Hồng Hà' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 6500000,
+            estimatedDuration: 300,
+            description: 'Full studio setup at home',
+            locations: {
+              create: [{ province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Hồng Hà' },
+          { province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con19.id, province: 'Thành phố Hà Nội', ward: 'Phường Hồng Hà' },
   });
 
   const con20 = await prisma.concept.create({
@@ -1369,14 +1849,43 @@ async function main() {
       description: 'For the ultimate car enthusiast. Detailed shots of engine modifications, interior craftsmanship, and exterior styling.',
       photographerId: p20.userId,
       categoryId: cat14.id,
-      tier: ConceptTier.STANDARD,
-      price: 1300,
-      estimatedDuration: 150,
       thumbnailUrl: `${baseUrl}/con20`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 2500000,
+            estimatedDuration: 90,
+            description: 'Detail shots only',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Bình Dương',
+                },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 5500000,
+            estimatedDuration: 180,
+            description: 'Showcase & action',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con20.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
   });
 
   const con21 = await prisma.concept.create({
@@ -1385,14 +1894,36 @@ async function main() {
       description: 'Intricate floral photography exploring the fine details of petals and dewdrops. Vibrant, natural, and artistic.',
       photographerId: p21.userId,
       categoryId: cat13.id,
-      tier: ConceptTier.BASIC,
-      price: 180,
-      estimatedDuration: 60,
       thumbnailUrl: `${baseUrl}/con21`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1500000,
+            estimatedDuration: 60,
+            description: 'Home garden shoot',
+            locations: {
+              create: [{ province: 'Tỉnh Đồng Nai', ward: 'Phường Đồng Xoài' }],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 3200000,
+            estimatedDuration: 120,
+            description: 'Botanical garden session',
+            locations: {
+              create: [{ province: 'Tỉnh Đồng Nai', ward: 'Phường Biên Hòa' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Đồng Nai', ward: 'Phường Đồng Xoài' },
+          { province: 'Tỉnh Đồng Nai', ward: 'Phường Biên Hòa' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con21.id, province: 'Tỉnh Đồng Nai', ward: 'Phường Đồng Xoài' },
   });
 
   const con22 = await prisma.concept.create({
@@ -1401,14 +1932,38 @@ async function main() {
       description: 'Astro-photography capturing the Milky Way and constellations. Specialized long-exposure equipment included.',
       photographerId: p22.userId,
       categoryId: cat15.id,
-      tier: ConceptTier.STANDARD,
-      price: 950,
-      estimatedDuration: 240,
       thumbnailUrl: `${baseUrl}/con22`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 6500000,
+            estimatedDuration: 240,
+            description: 'Single exposure stars',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Cẩm Lệ' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 13000000,
+            estimatedDuration: 480,
+            description: 'Deep sky & tracking',
+            locations: {
+              create: [{ province: 'Thành phố Đà Nẵng', ward: 'Phường An Khê' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Cẩm Lệ' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường An Khê' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con22.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Cẩm Lệ' },
   });
 
   const con23 = await prisma.concept.create({
@@ -1417,14 +1972,40 @@ async function main() {
       description: 'High-speed photography capturing the thrill of a live music performance. Specialized for low-light stage lighting.',
       photographerId: p23.userId,
       categoryId: cat26.id,
-      tier: ConceptTier.PREMIUM,
-      price: 1800,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con23`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4500000,
+            estimatedDuration: 120,
+            description: 'Club gig coverage',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Phú Thượng' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 12000000,
+            estimatedDuration: 300,
+            description: 'Festival stage coverage',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Phường Thanh Liệt' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Phường Phú Thượng' },
+          { province: 'Thành phố Hà Nội', ward: 'Phường Thanh Liệt' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con23.id, province: 'Thành phố Hà Nội', ward: 'Phường Phú Thượng' },
   });
 
   const con24 = await prisma.concept.create({
@@ -1433,14 +2014,38 @@ async function main() {
       description: 'A discreet and empowering session designed to celebrate physical beauty and self-confidence in a private setting.',
       photographerId: p24.userId,
       categoryId: cat25.id,
-      tier: ConceptTier.STANDARD,
-      price: 1100,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con24`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 5000000,
+            estimatedDuration: 120,
+            description: 'Basic studio setup',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 9500000,
+            estimatedDuration: 180,
+            description: 'Luxury hotel session',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con24.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
   });
 
   const con25 = await prisma.concept.create({
@@ -1449,14 +2054,38 @@ async function main() {
       description: 'Documenting the vibrant energy and cultural traditions of regional festivals with colorful and high-action shots.',
       photographerId: p25.userId,
       categoryId: cat27.id,
-      tier: ConceptTier.PREMIUM,
-      price: 2000,
-      estimatedDuration: 300,
       thumbnailUrl: `${baseUrl}/con25`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4000000,
+            estimatedDuration: 180,
+            description: 'Street parade coverage',
+            locations: {
+              create: [{ province: 'Tỉnh Quảng Ninh', ward: 'Phường Hà Tu' }],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 10000000,
+            estimatedDuration: 480,
+            description: 'Full cultural documentary',
+            locations: {
+              create: [
+                { province: 'Tỉnh Quảng Ninh', ward: 'Phường Bãi Cháy' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Quảng Ninh', ward: 'Phường Hà Tu' },
+          { province: 'Tỉnh Quảng Ninh', ward: 'Phường Bãi Cháy' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con25.id, province: 'Tỉnh Quảng Ninh', ward: 'Phường Hà Tu' },
   });
 
   const con26 = await prisma.concept.create({
@@ -1465,14 +2094,40 @@ async function main() {
       description: 'Creative and imaginative photography utilizing post-production to blend reality with dreamy, surreal elements.',
       photographerId: p26.userId,
       categoryId: cat28.id,
-      tier: ConceptTier.STANDARD,
-      price: 1400,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con26`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 8500000,
+            estimatedDuration: 240,
+            description: 'Simple composite',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 20000000,
+            estimatedDuration: 480,
+            description: 'Advanced photomanipulation',
+            locations: {
+              create: [
+                { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
+          { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con26.id, province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
   });
 
   const con27 = await prisma.concept.create({
@@ -1481,30 +2136,80 @@ async function main() {
       description: 'Bringing back the 90s aesthetic with retro props and color grading. Fun, nostalgic, and full of personality.',
       photographerId: p27.userId,
       categoryId: cat29.id,
-      tier: ConceptTier.BASIC,
-      price: 400,
-      estimatedDuration: 90,
       thumbnailUrl: `${baseUrl}/con27`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 1800000,
+            estimatedDuration: 90,
+            description: 'Classic 90s vibes',
+            locations: {
+              create: [
+                {
+                  province: 'Thành phố Hồ Chí Minh',
+                  ward: 'Phường Chánh Hiệp',
+                },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 3500000,
+            estimatedDuration: 150,
+            description: 'Themed retro set',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Phú Hòa' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Phú Hòa' },
+        ],
+      },
     },
   });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con27.id, province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' },
-  });
-
   const con28 = await prisma.concept.create({
     data: {
       name: 'Underwater Ocean Adventure',
       description: 'A unique underwater session for the adventurous. Capturing ethereal and weightless shots in a beautiful oceanic setting.',
       photographerId: p28.userId,
       categoryId: cat17.id,
-      tier: ConceptTier.PREMIUM,
-      price: 3500,
-      estimatedDuration: 180,
       thumbnailUrl: `${baseUrl}/con28`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 15000000,
+            estimatedDuration: 180,
+            description: 'Shallow reef session',
+            locations: {
+              create: [
+                { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 35000000,
+            estimatedDuration: 300,
+            description: 'Deep ocean diving session',
+            locations: {
+              create: [{ province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Cam Ranh' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
+          { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Cam Ranh' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con28.id, province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
   });
 
   const con29 = await prisma.concept.create({
@@ -1513,14 +2218,38 @@ async function main() {
       description: 'Natural and candid shots of children playing. Capturing pure joy and innocence without forced posing.',
       photographerId: p29.userId,
       categoryId: cat7.id,
-      tier: ConceptTier.STANDARD,
-      price: 500,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con29`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.BASIC,
+            price: 2000000,
+            estimatedDuration: 90,
+            description: 'Candid backyard play',
+            locations: {
+              create: [{ province: 'Thành phố Hà Nội', ward: 'Xã Đại Thanh' }],
+            },
+          },
+          {
+            tier: ConceptTier.STANDARD,
+            price: 4500000,
+            estimatedDuration: 180,
+            description: 'Professional studio fun set',
+            locations: {
+              create: [
+                { province: 'Thành phố Hà Nội', ward: 'Xã Nam Phù' },
+              ],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hà Nội', ward: 'Xã Đại Thanh' },
+          { province: 'Thành phố Hà Nội', ward: 'Xã Nam Phù' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con29.id, province: 'Thành phố Hà Nội', ward: 'Phường Kim Mã' },
   });
 
   const con30 = await prisma.concept.create({
@@ -1529,14 +2258,38 @@ async function main() {
       description: 'Professional imagery for business leaders and brands. High-quality portraits for press releases and websites.',
       photographerId: p30.userId,
       categoryId: cat23.id,
-      tier: ConceptTier.PREMIUM,
-      price: 2200,
-      estimatedDuration: 120,
       thumbnailUrl: `${baseUrl}/con30`,
+      packages: {
+        create: [
+          {
+            tier: ConceptTier.STANDARD,
+            price: 6000000,
+            estimatedDuration: 120,
+            description: 'Studio headshots',
+            locations: {
+              create: [
+                { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Dầu Tiếng' },
+              ],
+            },
+          },
+          {
+            tier: ConceptTier.PREMIUM,
+            price: 15000000,
+            estimatedDuration: 300,
+            description: 'On-site lifestyle branding',
+            locations: {
+              create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' }],
+            },
+          },
+        ],
+      },
+      locations: {
+        create: [
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Dầu Tiếng' },
+          { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' },
+        ],
+      },
     },
-  });
-  await prisma.conceptLocation.create({
-    data: { conceptId: con30.id, province: 'Thành phố Hồ Chí Minh', ward: 'Xã Dầu Tiếng' },
   });
 
   console.log('--- Seeding 30 Concept Photos ---');
@@ -1586,7 +2339,7 @@ async function main() {
     data: { conceptId: con14.id, imageUrl: `${baseUrl}/car1` },
   });
   await prisma.conceptPhoto.create({
-  data: { conceptId: con15.id, imageUrl: `${baseUrl}/vintage1` },
+    data: { conceptId: con15.id, imageUrl: `${baseUrl}/vintage1` },
   });
   await prisma.conceptPhoto.create({
     data: { conceptId: con16.id, imageUrl: `${baseUrl}/aerial1` },
@@ -1789,7 +2542,7 @@ async function main() {
       totalPrice: 1000,
     },
   });
- 
+
   console.log('--- Seeding 30 Reviews ---');
   await prisma.review.create({
     data: {
@@ -1840,7 +2593,7 @@ async function main() {
       comment: 'Vibrant festival captures.',
     },
   });
-  
+
   console.log('--- Seeding 30 Schedules ---');
   await prisma.photographerSchedule.create({
     data: { photographerId: p1.userId, availableDate: new Date('2025-05-20') },

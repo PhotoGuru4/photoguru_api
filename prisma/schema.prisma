@@ -113,20 +113,43 @@ model Concept {
   categoryId        Int          @map("category_id")
   name              String       @db.VarChar(150)
   description       String?      @db.Text
-  tier              ConceptTier  @default(BASIC)
-  price             Decimal      @default(0) @db.Decimal(12, 2)
   thumbnailUrl      String?      @map("thumbnail_url")
-  estimatedDuration Int?         @map("estimated_duration")
   createdAt         DateTime     @default(now()) @map("created_at")
 
   photographer      Photographer @relation(fields: [photographerId], references: [userId])
   category          Category     @relation(fields: [categoryId], references: [id])
+  packages          ConceptPackage[] 
   locations         ConceptLocation[]
   photos            ConceptPhoto[]
   bookings          Booking[]
   chatRooms         ChatRoom[]
 
   @@map("concepts")
+}
+
+model ConceptPackage {
+  id                Int          @id @default(autoincrement())
+  conceptId         Int          @map("concept_id")
+  tier              ConceptTier  @default(BASIC)
+  price             Decimal      @db.Decimal(12, 2)
+  description       String?      @db.Text
+  estimatedDuration Int?         @map("estimated_duration")
+
+  concept           Concept      @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  locations         ConceptPackageLocation[]
+
+  @@map("concept_packages")
+}
+
+model ConceptPackageLocation {
+  id            Int            @id @default(autoincrement())
+  packageId     Int            @map("package_id")
+  province      String         @db.VarChar(100)
+  ward          String         @db.VarChar(100)
+  addressDetail String?        @map("address_detail") @db.VarChar(255)
+  package       ConceptPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  
+  @@map("concept_package_locations")
 }
 model ConceptLocation {
   id            Int     @id @default(autoincrement())

@@ -1,10 +1,11 @@
 import { ConceptTier } from '@prisma/client';
+
 export interface RawConceptRecommendation {
   id: number;
   name: string;
-  price: number;
+  minPrice: number | string;
+  maxPrice: number | string;
   thumbnailUrl: string | null;
-  tier: ConceptTier;
   photographerId: number;
   photographerName: string;
   categoryName: string;
@@ -14,9 +15,9 @@ export interface RawConceptRecommendation {
 export interface RecommendedConceptItem {
   id: number;
   name: string;
-  price: number;
+  minPrice: number;
+  maxPrice: number;
   thumbnailUrl: string | null;
-  tier: ConceptTier;
   photographerId: number;
   photographerName: string;
   categoryName: string;
@@ -26,12 +27,13 @@ export interface RecommendedConceptItem {
 export interface ConceptItem {
   id: number;
   name: string;
-  price: number;
+  minPrice: number;
+  maxPrice: number;
   thumbnailUrl: string | null;
-  tier: ConceptTier;
   photographerId: number;
   photographerName: string;
   categoryName: string;
+  priority: number;
   locations: {
     province: string;
     ward: string;
@@ -39,18 +41,18 @@ export interface ConceptItem {
   }[];
 }
 
-export interface SearchCursor {
+export interface CursorData {
   id: number;
-  price: number;
+  minPrice?: number;
+  priority: number;
 }
 
 export interface ConceptDetailResponse {
   id: number;
   name: string;
   description: string | null;
-  price: number;
-  estimatedDuration: number | null;
-  tier: ConceptTier;
+  minPrice: number;
+  maxPrice: number;
   thumbnailUrl: string | null;
   categoryName: string;
   photographer: {
@@ -61,6 +63,13 @@ export interface ConceptDetailResponse {
     province: string | null;
     bio: string | null;
   };
+  packages: {
+    id: number;
+    tier: ConceptTier;
+    price: number;
+    description: string | null;
+    estimatedDuration: number | null;
+  }[];
   photos: {
     id: number;
     imageUrl: string;
@@ -70,17 +79,4 @@ export interface ConceptDetailResponse {
     ward: string;
     addressDetail: string | null;
   }[];
-}
-
-export interface RelatedConceptItem {
-  id: number;
-  name: string;
-  price: number;
-  thumbnailUrl: string | null;
-  photographerName: string;
-  categoryName: string;
-}
-
-export interface RelatedCursor {
-  id: number;
 }
