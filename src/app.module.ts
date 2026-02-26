@@ -6,6 +6,7 @@ import { CloudinaryModule } from './shared/cloudinary/cloudinary.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConceptsModule } from './modules/concepts/concepts.module';
 import { UsersModule } from './modules/users/users.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     ConceptsModule,
     UsersModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

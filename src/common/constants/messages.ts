@@ -20,4 +20,19 @@ export const MESSAGES = {
     NOT_FOUND: 'Concept not found',
     INVALID_PAGINATION_CURSOR: 'Invalid pagination cursor',
   },
+  DASHBOARD: {
+    FETCH_SUCCESS: 'Dashboard data fetched successfully',
+    ACCESS_DENIED: 'Only photographers can access this dashboard',
+  },
+  SCHEDULE: {
+    FETCH_SUCCESS: 'Photographer schedules fetched successfully',
+    UNAVAILABLE: 'This schedule slot is no longer available',
+  },
+  BOOKING: {
+    CREATED: 'Booking request sent successfully',
+    RESPONDED: 'Booking responded successfully',
+    COMPLETED: 'Booking marked as completed',
+    NOT_FOUND: 'Booking not found',
+    UNAUTHORIZED: 'You are not authorized to perform this action',
+  },
 } as const;

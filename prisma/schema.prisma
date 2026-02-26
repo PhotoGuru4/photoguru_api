@@ -14,6 +14,7 @@ enum UserRole {
 
 enum BookingStatus {
   PENDING
+  INPROGRESS
   CONFIRMED
   COMPLETED
   CANCELLED
