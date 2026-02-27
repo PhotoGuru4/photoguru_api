@@ -443,4 +443,59 @@ export class ConceptsService {
       data: { items, meta: { nextCursor, hasNextPage: hasMore } },
     };
   }
+
+  async getConceptChatCard(id: number) {
+    const concept = await this.prisma.concept.findUnique({
+      where: { id },
+      include: {
+        packages: { select: { price: true } },
+        locations: {
+          select: { province: true, ward: true, addressDetail: true },
+        },
+      },
+    });
+
+    if (!concept) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
+
+    const prices = concept.packages.map((p) => Number(p.price));
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+    const firstLocation = concept.locations[0];
+    const locationString = firstLocation
+      ? [
+          firstLocation.addressDetail,
+          firstLocation.ward,
+          firstLocation.province,
+        ]
+          .filter(Boolean)
+          .join(', ')
+      : 'N/A';
+
+    return {
+      message: MESSAGES.CONCEPT.FETCH_SUCCESS,
+      data: {
+        id: concept.id,
+        name: concept.name,
+        description: concept.description,
+        thumbnailUrl: concept.thumbnailUrl,
+        priceRange: `${minPrice} - ${maxPrice}`,
+      },
+    };
+  }
+
+  async getConceptPackages(id: number) {
+    const packages = await this.prisma.conceptPackage.findMany({
+      where: { conceptId: id },
+      orderBy: { price: 'asc' },
+    });
+
+    return {
+      message: MESSAGES.CONCEPT.FETCH_SUCCESS,
+      data: packages.map((pkg) => ({
+        ...pkg,
+        price: Number(pkg.price),
+      })),
+    };
+  }
 }

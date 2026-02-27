@@ -8,24 +8,18 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import type { Response, Request } from 'express';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AtGuard } from './guards/at.guard';
 import { RtGuard } from './guards/rt.guard';
 import {
-  JwtPayload,
-  JwtPayloadWithRt,
-} from './interfaces/jwt-payload.interface';
+  RequestWithUser,
+  RequestWithUserRt,
+} from './interfaces/request-with-user.interface';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-interface RequestWithUser extends Request {
-  user: JwtPayload;
-}
 
-interface RequestWithUserRt extends Request {
-  user: JwtPayloadWithRt;
-}
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {

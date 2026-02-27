@@ -35,4 +35,16 @@ export const MESSAGES = {
     NOT_FOUND: 'Booking not found',
     UNAUTHORIZED: 'You are not authorized to perform this action',
   },
+  CHAT: {
+    ROOM_CREATED: 'Chat room created successfully',
+    ROOM_FETCHED: 'Chat room fetched successfully',
+    ROOMS_FETCHED: 'Chat rooms fetched successfully',
+    ROOM_NOT_FOUND: 'Chat room not found',
+    PHOTOGRAPHER_NOT_FOUND: 'Photographer not found',
+    CONCEPT_NOT_FOUND: 'Concept not found or not belong to photographer',
+    ONLY_CUSTOMER_CAN_CREATE: 'Only customers can create chat rooms',
+    ACCESS_DENIED: 'You do not have access to this chat room',
+    FIRESTORE_CREATE_FAILED: 'Failed to create Firestore document',
+    FIRESTORE_CREATE_SUCCESS: 'Created Firestore document for chat room {id}',
+  },
 } as const;

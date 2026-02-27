@@ -34,11 +34,6 @@ enum NotificationType {
   SYSTEM
 }
 
-enum MessageType {
-  TEXT
-  BOOKING_CARD
-}
-
 model User {
   id           Int      @id @default(autoincrement())
   fullName     String   @map("full_name") @db.VarChar(100)
@@ -61,7 +56,6 @@ model User {
   notifications Notification[]
   bookings      Booking[]       @relation("ClientBookings")
   chatRooms     ChatRoom[]      @relation("ClientRooms")
-  messages      Message[]
   aiSessions    AiGuidanceSession[]
 
   @@map("users")
@@ -210,29 +204,14 @@ model ChatRoom {
   clientId       Int      @map("client_id")
   conceptId      Int?     @map("concept_id")
   createdAt      DateTime @default(now()) @map("created_at")
-
+  updatedAt DateTime @updatedAt @map("updated_at")
   client       User         @relation("ClientRooms", fields: [clientId], references: [id])
   photographer Photographer @relation(fields: [photographerId], references: [userId])
   concept      Concept?     @relation(fields: [conceptId], references: [id])
-  messages     Message[]
 
   @@map("chat_rooms")
 }
 
-model Message {
-  id         Int      @id @default(autoincrement())
-  chatRoomId Int      @map("chat_room_id")
-  senderId   Int      @map("sender_id")
-  type       MessageType @default(TEXT)
-  content    String   @db.Text
-  isRead     Boolean  @default(false) @map("is_read")
-  sentAt     DateTime @default(now()) @map("sent_at")
-
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
-  sender     User     @relation(fields: [senderId], references: [id])
-
-  @@map("messages")
-}
 
 model PhotographerSchedule {
   id             Int       @id @default(autoincrement())

@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConceptsModule } from './modules/concepts/concepts.module';
 import { UsersModule } from './modules/users/users.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ConceptsModule,
     UsersModule,
     DashboardModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,7 +3,6 @@ import {
   BookingStatus,
   ConceptTier,
   NotificationType,
-  MessageType,
   PrismaClient,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -17,7 +16,6 @@ async function main() {
 
   await prisma.aiGuidanceSession.deleteMany({});
   await prisma.notification.deleteMany({});
-  await prisma.message.deleteMany({});
   await prisma.review.deleteMany({});
   await prisma.photographerSchedule.deleteMany({});
   await prisma.booking.deleteMany({});
@@ -2654,52 +2652,6 @@ async function main() {
     data: { photographerId: p16.userId, availableDate: new Date('2025-06-25') },
   });
 
-  console.log('--- Seeding 15 Chat Rooms & 15 Messages ---');
-  const room1 = await prisma.chatRoom.create({
-    data: { clientId: c1.id, photographerId: p1.userId, conceptId: con1.id },
-  });
-  await prisma.message.create({
-    data: {
-      chatRoomId: room1.id,
-      senderId: c1.id,
-      content: 'Hi Alex, I want to book the Royal Wedding concept.',
-      type: MessageType.TEXT,
-    },
-  });
-  await prisma.message.create({
-    data: {
-      chatRoomId: room1.id,
-      senderId: pu1.id,
-      content: 'Sure Alice, what date are you looking for?',
-      type: MessageType.TEXT,
-    },
-  });
-
-  const room2 = await prisma.chatRoom.create({
-    data: { clientId: c2.id, photographerId: p3.userId, conceptId: con2.id },
-  });
-  await prisma.message.create({
-    data: {
-      chatRoomId: room2.id,
-      senderId: c2.id,
-      content: 'I love your Tokyo night shots!',
-      type: MessageType.TEXT,
-    },
-  });
-
-  for (let i = 3; i <= 15; i++) {
-    const room = await prisma.chatRoom.create({
-      data: { clientId: c1.id, photographerId: pu1.id },
-    });
-    await prisma.message.create({
-      data: {
-        chatRoomId: room.id,
-        senderId: c1.id,
-        content: `Message #${i}`,
-        type: MessageType.TEXT,
-      },
-    });
-  }
 
   console.log('--- Seeding 15 Notifications ---');
   await prisma.notification.create({

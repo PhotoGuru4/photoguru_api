@@ -10,9 +10,6 @@ CREATE TYPE "ConceptTier" AS ENUM ('BASIC', 'STANDARD', 'PREMIUM');
 -- CreateEnum
 CREATE TYPE "NotificationType" AS ENUM ('BOOKING_UPDATE', 'NEW_MESSAGE', 'REMINDER', 'SYSTEM');
 
--- CreateEnum
-CREATE TYPE "MessageType" AS ENUM ('TEXT', 'BOOKING_CARD');
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -157,21 +154,9 @@ CREATE TABLE "chat_rooms" (
     "client_id" INTEGER NOT NULL,
     "concept_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "chat_rooms_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "messages" (
-    "id" SERIAL NOT NULL,
-    "chat_room_id" INTEGER NOT NULL,
-    "sender_id" INTEGER NOT NULL,
-    "type" "MessageType" NOT NULL DEFAULT 'TEXT',
-    "content" TEXT NOT NULL,
-    "is_read" BOOLEAN NOT NULL DEFAULT false,
-    "sent_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "messages_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -249,12 +234,6 @@ ALTER TABLE "chat_rooms" ADD CONSTRAINT "chat_rooms_photographer_id_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "chat_rooms" ADD CONSTRAINT "chat_rooms_concept_id_fkey" FOREIGN KEY ("concept_id") REFERENCES "concepts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "messages" ADD CONSTRAINT "messages_chat_room_id_fkey" FOREIGN KEY ("chat_room_id") REFERENCES "chat_rooms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "photographer_schedules" ADD CONSTRAINT "photographer_schedules_photographer_id_fkey" FOREIGN KEY ("photographer_id") REFERENCES "photographers"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
