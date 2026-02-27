@@ -64,4 +64,17 @@ export class ConceptsController {
   ) {
     return this.conceptsService.findRelated(id, query);
   }
+  @UseGuards(AtGuard)
+  @Get(':id/chat-card')
+  @ApiOperation({ summary: 'Get minimal concept info for Firebase Chat Card' })
+  async getChatCard(@Param('id', ParseIntPipe) id: number) {
+    return this.conceptsService.getConceptChatCard(id);
+  }
+
+  @UseGuards(AtGuard)
+  @Get(':id/packages')
+  @ApiOperation({ summary: 'Get all packages for a concept (Booking Flow)' })
+  async getPackages(@Param('id', ParseIntPipe) id: number) {
+    return this.conceptsService.getConceptPackages(id);
+  }
 }
