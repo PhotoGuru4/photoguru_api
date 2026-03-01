@@ -46,5 +46,6 @@ export const MESSAGES = {
     ACCESS_DENIED: 'You do not have access to this chat room',
     FIRESTORE_CREATE_FAILED: 'Failed to create Firestore document',
     FIRESTORE_CREATE_SUCCESS: 'Created Firestore document for chat room {id}',
+    CONCEPT_NOT_FOUND_FOR_CHAT_ROOM: 'Concept not found for this chat room',
   },
 } as const;

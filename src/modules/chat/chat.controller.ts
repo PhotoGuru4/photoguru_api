@@ -12,6 +12,7 @@ import { ChatService } from './chat.service';
 import { AtGuard } from '../auth/guards/at.guard';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { MESSAGES } from 'src/common/constants/messages';
 
 @ApiTags('Chat')
 @ApiBearerAuth('access-token')
@@ -26,18 +27,40 @@ export class ChatController {
     @Req() req: RequestWithUser,
     @Body() dto: CreateChatRoomDto,
   ) {
-    return this.chatService.createChatRoom(req.user.sub, dto, req.user.role);
+    const data = await this.chatService.createChatRoom(
+      req.user.sub,
+      dto,
+      req.user.role,
+    );
+    return {
+      message: MESSAGES.CHAT.ROOM_CREATED,
+      data,
+    };
   }
 
   @Get()
   @ApiOperation({ summary: 'Get my chat rooms' })
   async getMyRooms(@Req() req: RequestWithUser) {
-    return this.chatService.getMyChatRooms(req.user.sub, req.user.role);
+    const data = await this.chatService.getMyChatRooms(
+      req.user.sub,
+      req.user.role,
+    );
+    return {
+      message: MESSAGES.CHAT.ROOMS_FETCHED,
+      data,
+    };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get chat room details by ID' })
   async getRoom(@Req() req: RequestWithUser, @Param('id') id: string) {
-    return this.chatService.getChatRoomById(Number(id), req.user.sub);
+    const data = await this.chatService.getChatRoomById(
+      Number(id),
+      req.user.sub,
+    );
+    return {
+      message: MESSAGES.CHAT.ROOM_FETCHED,
+      data,
+    };
   }
 }

@@ -1,4 +1,3 @@
-// src/modules/chat/dto/create-chat-room.dto.ts
 import { IsInt, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 

@@ -10,6 +10,8 @@ import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { UserRole } from '@prisma/client';
 import * as admin from 'firebase-admin';
 import { MESSAGES } from 'src/common/constants/messages';
+import { FirebaseMessage } from './interfaces/message.interface';
+import { ConceptDetailForChat } from './interfaces/concepdetail.interface';
 
 @Injectable()
 export class ChatService {
@@ -109,23 +111,83 @@ export class ChatService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    return rooms.map((room) => ({
-      id: room.id,
-      participant:
-        userRole === UserRole.CUSTOMER
-          ? {
-              id: room.photographer.userId,
-              name: room.photographer.user.fullName,
-              avatar: room.photographer.user.avatarUrl,
-            }
-          : {
-              id: room.client.id,
-              name: room.client.fullName,
-              avatar: room.client.avatarUrl,
-            },
-      concept: room.concept,
-      createdAt: room.createdAt,
-    }));
+    const roomsWithLastMessage = await Promise.all(
+      rooms.map(async (room) => {
+        try {
+          const messagesRef = this.firebase.firestore
+            .collection('chatRooms')
+            .doc(room.id.toString())
+            .collection('messages')
+            .orderBy('sentAt', 'desc')
+            .limit(1);
+
+          const snapshot = await messagesRef.get();
+          let lastMessage: FirebaseMessage | null = null;
+          let lastMessageTime: Date | null = null;
+
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const data = doc.data() as FirebaseMessage;
+            lastMessage = data;
+            lastMessageTime = data.sentAt?.toDate?.() || null;
+          }
+
+          return {
+            id: room.id,
+            participant:
+              userRole === UserRole.CUSTOMER
+                ? {
+                    id: room.photographer.userId,
+                    name: room.photographer.user.fullName,
+                    avatar: room.photographer.user.avatarUrl,
+                  }
+                : {
+                    id: room.client.id,
+                    name: room.client.fullName,
+                    avatar: room.client.avatarUrl,
+                  },
+            lastMessage: lastMessage
+              ? {
+                  content: lastMessage.content,
+                  type: lastMessage.type,
+                  senderId: lastMessage.senderId,
+                  sentAt: lastMessageTime,
+                }
+              : null,
+            lastMessageTime,
+            createdAt: room.createdAt,
+          };
+        } catch (error) {
+          this.logger.error(
+            `Failed to fetch last message for room ${room.id}: ${(error as Error).message}`,
+          );
+          return {
+            id: room.id,
+            participant:
+              userRole === UserRole.CUSTOMER
+                ? {
+                    id: room.photographer.userId,
+                    name: room.photographer.user.fullName,
+                    avatar: room.photographer.user.avatarUrl,
+                  }
+                : {
+                    id: room.client.id,
+                    name: room.client.fullName,
+                    avatar: room.client.avatarUrl,
+                  },
+            lastMessage: null,
+            lastMessageTime: null,
+            createdAt: room.createdAt,
+          };
+        }
+      }),
+    );
+    roomsWithLastMessage.sort((a, b) => {
+      const timeA = a.lastMessageTime?.getTime() ?? a.createdAt.getTime();
+      const timeB = b.lastMessageTime?.getTime() ?? b.createdAt.getTime();
+      return timeB - timeA;
+    });
+    return roomsWithLastMessage;
   }
 
   async getChatRoomById(roomId: number, currentUserId?: number) {
@@ -137,17 +199,24 @@ export class ChatService {
           include: { user: { select: { fullName: true, avatarUrl: true } } },
         },
         concept: {
-          select: {
-            id: true,
-            name: true,
-            thumbnailUrl: true,
-            description: true,
+          include: {
+            packages: { select: { price: true } },
+            locations: {
+              select: { province: true, ward: true, addressDetail: true },
+            },
           },
         },
       },
     });
+
     if (!room) {
       throw new BadRequestException(MESSAGES.CHAT.ROOM_NOT_FOUND);
+    }
+
+    if (!room.concept) {
+      throw new BadRequestException(
+        MESSAGES.CHAT.CONCEPT_NOT_FOUND_FOR_CHAT_ROOM,
+      );
     }
 
     if (
@@ -158,6 +227,42 @@ export class ChatService {
       throw new ForbiddenException(MESSAGES.CHAT.ACCESS_DENIED);
     }
 
-    return room;
+    const prices = room.concept.packages?.map((p) => Number(p.price)) || [];
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+    const priceRange = `${minPrice} - ${maxPrice}`;
+
+    const conceptDetail: ConceptDetailForChat = {
+      id: room.concept.id,
+      name: room.concept.name,
+      thumbnailUrl: room.concept.thumbnailUrl,
+      description: room.concept.description,
+      minPrice,
+      maxPrice,
+      priceRange,
+    };
+
+    return {
+      id: room.id,
+      photographerId: room.photographerId,
+      clientId: room.clientId,
+      conceptId: room.conceptId,
+      createdAt: room.createdAt,
+      updatedAt: room.updatedAt,
+      client: room.client,
+      photographer: {
+        userId: room.photographer.userId,
+        bio: room.photographer.bio,
+        experienceYears: room.photographer.experienceYears,
+        ratingAvg: room.photographer.ratingAvg,
+        isVerified: room.photographer.isVerified,
+        socialLinks: room.photographer.socialLinks,
+        user: {
+          fullName: room.photographer.user.fullName,
+          avatarUrl: room.photographer.user.avatarUrl,
+        },
+      },
+      concept: conceptDetail,
+    };
   }
 }
