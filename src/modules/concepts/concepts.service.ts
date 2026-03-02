@@ -479,7 +479,8 @@ export class ConceptsService {
         name: concept.name,
         description: concept.description,
         thumbnailUrl: concept.thumbnailUrl,
-        priceRange: `${minPrice} - ${maxPrice}`,
+        minPrice,
+        maxPrice,
       },
     };
   }
