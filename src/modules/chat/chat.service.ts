@@ -118,7 +118,7 @@ export class ChatService {
             .collection('chatRooms')
             .doc(room.id.toString())
             .collection('messages')
-            .orderBy('sentAt', 'desc')
+            .orderBy('createdAt', 'desc')
             .limit(1);
 
           const snapshot = await messagesRef.get();
@@ -129,7 +129,7 @@ export class ChatService {
             const doc = snapshot.docs[0];
             const data = doc.data() as FirebaseMessage;
             lastMessage = data;
-            lastMessageTime = data.sentAt?.toDate?.() || null;
+            lastMessageTime = data.createdAt?.toDate?.() || null;
           }
 
           return {
@@ -146,14 +146,7 @@ export class ChatService {
                     name: room.client.fullName,
                     avatar: room.client.avatarUrl,
                   },
-            lastMessage: lastMessage
-              ? {
-                  content: lastMessage.content,
-                  type: lastMessage.type,
-                  senderId: lastMessage.senderId,
-                  sentAt: lastMessageTime,
-                }
-              : null,
+            lastMessage: lastMessage?.content || null,
             lastMessageTime,
             createdAt: room.createdAt,
           };
