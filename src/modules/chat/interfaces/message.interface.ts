@@ -4,6 +4,6 @@ export interface FirebaseMessage {
   senderId: number;
   type: string;
   content: string | Record<string, any>;
-  sentAt: admin.firestore.Timestamp;
+  createdAt: admin.firestore.Timestamp;
   isRead: boolean;
 }
