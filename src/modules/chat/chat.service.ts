@@ -146,14 +146,7 @@ export class ChatService {
                     name: room.client.fullName,
                     avatar: room.client.avatarUrl,
                   },
-            lastMessage: lastMessage
-              ? {
-                  content: lastMessage.content,
-                  type: lastMessage.type,
-                  senderId: lastMessage.senderId,
-                  sentAt: lastMessageTime,
-                }
-              : null,
+            lastMessage: lastMessage?.content || null,
             lastMessageTime,
             createdAt: room.createdAt,
           };
