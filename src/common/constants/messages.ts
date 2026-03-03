@@ -48,4 +48,7 @@ export const MESSAGES = {
     FIRESTORE_CREATE_SUCCESS: 'Created Firestore document for chat room {id}',
     CONCEPT_NOT_FOUND_FOR_CHAT_ROOM: 'Concept not found for this chat room',
   },
+  AI_GUIDE: {
+    ANALYZE_SUCCESS: 'Image analyzed successfully',
+  },
 } as const;

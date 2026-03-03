@@ -4,6 +4,7 @@ import { AtGuard } from '../auth/guards/at.guard';
 import { AiGuideService } from './ai-guide.service';
 import { AnalyzeImageDto } from './dto/analyze-image.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { MESSAGES } from '../../common/constants/messages'; // nếu có
 
 @ApiTags('AI Guide')
 @ApiBearerAuth()
@@ -18,6 +19,9 @@ export class AiGuideController {
   })
   async analyze(@Req() req: RequestWithUser, @Body() dto: AnalyzeImageDto) {
     const instruction = await this.service.analyzeImage(dto.image, dto.context);
-    return { instruction };
+    return {
+      message: MESSAGES.AI_GUIDE.ANALYZE_SUCCESS,
+      data: { instruction },
+    };
   }
 }
