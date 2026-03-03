@@ -4,6 +4,7 @@ import { AtGuard } from '../auth/guards/at.guard';
 import { AiGuideService } from './ai-guide.service';
 import { AnalyzeImageDto } from './dto/analyze-image.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { MESSAGES } from '../../common/constants/messages';
 
 @ApiTags('AI Guide')
 @ApiBearerAuth()
@@ -17,7 +18,10 @@ export class AiGuideController {
     summary: 'Analyze photo and return voice instruction in English',
   })
   async analyze(@Req() req: RequestWithUser, @Body() dto: AnalyzeImageDto) {
-    const instruction = await this.service.analyzeImage(dto.image, dto.context);
-    return { instruction };
+    const result = await this.service.analyzeImage(dto.image, dto.context);
+    return {
+      message: MESSAGES.AI_GUIDE.ANALYZE_SUCCESS,
+      data: result,
+    };
   }
 }
