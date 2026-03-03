@@ -8,6 +8,7 @@ import { ConceptsModule } from './modules/concepts/concepts.module';
 import { UsersModule } from './modules/users/users.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { AiGuideModule } from './modules/ai-guide/ai-guide.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChatModule } from './modules/chat/chat.module';
     UsersModule,
     DashboardModule,
     ChatModule,
+    AiGuideModule,
   ],
   controllers: [AppController],
   providers: [AppService],

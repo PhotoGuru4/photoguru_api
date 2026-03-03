@@ -2540,7 +2540,7 @@ async function main() {
       totalPrice: 1000000,
     },
   });
-   const b16 = await prisma.booking.create({
+  const b16 = await prisma.booking.create({
     data: {
       clientId: c16.id,
       photographerId: p1.userId,
@@ -2550,7 +2550,39 @@ async function main() {
       totalPrice: 25000000,
     },
   });
-
+  const b17 = await prisma.booking.create({
+    data: {
+      clientId: c2.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-03-05T00:00:00.000Z'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 15500000,
+      isCompletedByCustomer: true,
+    },
+  });
+  const b18 = await prisma.booking.create({
+    data: {
+      clientId: c3.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-03-05T03:00:00.000Z'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 15600000,
+      isCompletedByCustomer: true,
+    },
+  });
+  const b19 = await prisma.booking.create({
+    data: {
+      clientId: c4.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-03-05T08:00:00.000Z'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 16000000,
+      isCompletedByCustomer: true,
+    },
+  });
   console.log('--- Seeding 30 Reviews ---');
   await prisma.review.create({
     data: {

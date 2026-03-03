@@ -154,6 +154,7 @@ export class ConceptsService {
           c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
+          u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
@@ -165,7 +166,7 @@ export class ConceptsService {
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
         LEFT JOIN concept_locations loc ON c.id = loc.concept_id
         WHERE 1=1 ${searchCondition}
-        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
       SELECT * FROM ConceptData
       WHERE 1=1 ${paginationCondition}
@@ -191,6 +192,7 @@ export class ConceptsService {
         thumbnailUrl: item.thumbnailUrl,
         photographerId: item.photographerId,
         photographerName: item.photographerName,
+        photographerAvatar: item.photographerAvatar,
         categoryName: item.categoryName,
         priority: Number(item.priority),
         locations: locations
@@ -252,6 +254,7 @@ export class ConceptsService {
           c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
+          u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
@@ -262,7 +265,7 @@ export class ConceptsService {
         JOIN categories cat ON c.category_id = cat.id
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
         LEFT JOIN concept_locations loc ON c.id = loc.concept_id
-        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
       SELECT * FROM ConceptData
       WHERE 1=1 ${paginationCondition}
@@ -281,6 +284,7 @@ export class ConceptsService {
       thumbnailUrl: item.thumbnailUrl,
       photographerId: item.photographerId,
       photographerName: item.photographerName,
+      photographerAvatar: item.photographerAvatar,
       categoryName: item.categoryName,
       priority: Number(item.priority),
     }));
@@ -395,6 +399,7 @@ export class ConceptsService {
           c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
+          u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
@@ -406,7 +411,7 @@ export class ConceptsService {
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
         LEFT JOIN concept_locations loc ON c.id = loc.concept_id
         WHERE c.id != ${id}
-        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, cat.name
+        GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
       SELECT * FROM ConceptData
       WHERE 1=1 ${paginationCondition}
@@ -425,6 +430,7 @@ export class ConceptsService {
       thumbnailUrl: r.thumbnailUrl,
       photographerId: r.photographerId,
       photographerName: r.photographerName,
+      photographerAvatar: r.photographerAvatar,
       categoryName: r.categoryName,
       priority: Number(r.priority),
     }));

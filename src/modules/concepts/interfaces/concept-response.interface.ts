@@ -8,6 +8,7 @@ export interface RawConceptRecommendation {
   thumbnailUrl: string | null;
   photographerId: number;
   photographerName: string;
+  photographerAvatar: string | null;
   categoryName: string;
   priority: bigint | number;
 }
@@ -20,6 +21,7 @@ export interface RecommendedConceptItem {
   thumbnailUrl: string | null;
   photographerId: number;
   photographerName: string;
+  photographerAvatar: string | null;
   categoryName: string;
   priority: number;
 }
@@ -32,6 +34,7 @@ export interface ConceptItem {
   thumbnailUrl: string | null;
   photographerId: number;
   photographerName: string;
+  photographerAvatar: string | null;
   categoryName: string;
   priority: number;
   locations: {
