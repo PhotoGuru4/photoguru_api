@@ -50,7 +50,6 @@ export class ChatService {
       where: {
         clientId: userId,
         photographerId,
-        conceptId,
       },
     });
 
@@ -86,6 +85,10 @@ export class ChatService {
           `${MESSAGES.CHAT.FIRESTORE_CREATE_FAILED}: ${(error as Error).message}`,
         );
       }
+    } else {
+      this.logger.log(
+        `Reusing existing chat room ${room.id} for user ${userId} and photographer ${photographerId}`,
+      );
     }
 
     return this.getChatRoomById(room.id, userId);
