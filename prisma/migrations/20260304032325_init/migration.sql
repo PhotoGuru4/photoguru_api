@@ -16,7 +16,7 @@ CREATE TABLE "users" (
     "full_name" VARCHAR(100) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "avatar_url" TEXT DEFAULT 'default_user.png',
+    "avatar_url" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'CUSTOMER',
     "province" VARCHAR(100),
     "ward" VARCHAR(100),
