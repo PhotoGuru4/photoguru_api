@@ -39,7 +39,7 @@ model User {
   fullName     String   @map("full_name") @db.VarChar(100)
   email        String   @unique @db.VarChar(255)
   password     String   @db.VarChar(255)
-  avatarUrl    String?  @default("default_user.png") @map("avatar_url")
+  avatarUrl    String?  @map("avatar_url")
   role         UserRole @default(CUSTOMER)
   
   province     String?  @db.VarChar(100)
