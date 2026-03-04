@@ -114,26 +114,33 @@ export class ChatService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const roomsWithLastMessage = await Promise.all(
+    const roomsWithDetails = await Promise.all(
       rooms.map(async (room) => {
         try {
           const messagesRef = this.firebase.firestore
             .collection('chatRooms')
             .doc(room.id.toString())
-            .collection('messages')
+            .collection('messages');
+          const lastMsgSnapshot = await messagesRef
             .orderBy('createdAt', 'desc')
-            .limit(1);
+            .limit(1)
+            .get();
 
-          const snapshot = await messagesRef.get();
           let lastMessage: FirebaseMessage | null = null;
           let lastMessageTime: Date | null = null;
 
-          if (!snapshot.empty) {
-            const doc = snapshot.docs[0];
+          if (!lastMsgSnapshot.empty) {
+            const doc = lastMsgSnapshot.docs[0];
             const data = doc.data() as FirebaseMessage;
             lastMessage = data;
             lastMessageTime = data.createdAt?.toDate?.() || null;
           }
+          const unreadQuery = messagesRef
+            .where('senderId', '!=', userId)
+            .where('isRead', '==', false);
+
+          const unreadSnapshot = await unreadQuery.count().get();
+          const unreadCount = unreadSnapshot.data().count;
 
           return {
             id: room.id,
@@ -151,11 +158,12 @@ export class ChatService {
                   },
             lastMessage: lastMessage?.content || null,
             lastMessageTime,
+            unreadCount,
             createdAt: room.createdAt,
           };
         } catch (error) {
           this.logger.error(
-            `Failed to fetch last message for room ${room.id}: ${(error as Error).message}`,
+            `Failed to fetch details for room ${room.id}: ${(error as Error).message}`,
           );
           return {
             id: room.id,
@@ -173,17 +181,20 @@ export class ChatService {
                   },
             lastMessage: null,
             lastMessageTime: null,
+            unreadCount: 0,
             createdAt: room.createdAt,
           };
         }
       }),
     );
-    roomsWithLastMessage.sort((a, b) => {
+
+    roomsWithDetails.sort((a, b) => {
       const timeA = a.lastMessageTime?.getTime() ?? a.createdAt.getTime();
       const timeB = b.lastMessageTime?.getTime() ?? b.createdAt.getTime();
       return timeB - timeA;
     });
-    return roomsWithLastMessage;
+
+    return roomsWithDetails;
   }
 
   async getChatRoomById(roomId: number, currentUserId?: number) {
