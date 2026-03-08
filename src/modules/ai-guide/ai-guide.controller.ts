@@ -3,6 +3,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AtGuard } from '../auth/guards/at.guard';
 import { AiGuideService } from './ai-guide.service';
 import { AnalyzeImageDto } from './dto/analyze-image.dto';
+import { EditImageDto } from './dto/edit-image.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { MESSAGES } from '../../common/constants/messages';
 
@@ -22,6 +23,19 @@ export class AiGuideController {
     return {
       message: MESSAGES.AI_GUIDE.ANALYZE_SUCCESS,
       data: result,
+    };
+  }
+
+  @Post('edit')
+  @ApiOperation({ summary: 'Edit photo based on AI instruction' })
+  async edit(@Req() req: RequestWithUser, @Body() dto: EditImageDto) {
+    const editedImage = await this.service.editImage(
+      dto.image,
+      dto.instruction,
+    );
+    return {
+      message: MESSAGES.AI_GUIDE.EDIT_SUCCESS,
+      data: { editedImage },
     };
   }
 }

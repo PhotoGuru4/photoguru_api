@@ -50,5 +50,8 @@ export const MESSAGES = {
   },
   AI_GUIDE: {
     ANALYZE_SUCCESS: 'Image analyzed successfully',
+    EDIT_SUCCESS: 'Image edited successfully',
+    ANALYZE_FAILED: 'Unable to analyze image. Please try again later.',
+    EDIT_FAILED: 'Could not edit image. Please try again.',
   },
 } as const;
