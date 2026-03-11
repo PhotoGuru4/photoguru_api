@@ -7,4 +7,9 @@ export const TIME = {
     SECONDS: 59,
     MILLISECONDS: 999,
   },
+  DEFAULT_SLOT_DURATION_MINUTES: 60,
+  WORK_HOURS: {
+    START: 5,
+    END: 18,
+  },
 } as const;

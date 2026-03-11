@@ -33,7 +33,7 @@ async function main() {
   const c1 = await prisma.user.create({
     data: {
       fullName: 'Mai Tram',
-      email: 'tramhuynh@gmail.com',
+      email: 'htt301202@gmail.com',
       password,
       role: UserRole.CUSTOMER,
       avatarUrl: `${baseUrl}/client1`,
@@ -365,7 +365,7 @@ async function main() {
   const pu1 = await prisma.user.create({
     data: {
       fullName: 'Thuy Ha',
-      email: 'thuyha@photo.com',
+      email: 'holykimsa05@gmail.com',
       password,
       role: UserRole.PHOTOGRAPHER,
       avatarUrl: `${baseUrl}/photographer1`,

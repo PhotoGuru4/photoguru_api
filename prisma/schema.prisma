@@ -132,6 +132,7 @@ model ConceptPackage {
 
   concept           Concept      @relation(fields: [conceptId], references: [id], onDelete: Cascade)
   locations         ConceptPackageLocation[]
+  bookings          Booking[]
 
   @@map("concept_packages")
 }
@@ -171,6 +172,8 @@ model Booking {
   clientId               Int           @map("client_id")
   photographerId         Int           @map("photographer_id")
   conceptId              Int           @map("concept_id")
+  packageId              Int?          @map("package_id")
+  address                String?       @db.VarChar(255)
   bookingDate            DateTime      @map("booking_date")
   status                 BookingStatus @default(PENDING)
   totalPrice             Decimal?      @map("total_price") @db.Decimal(12, 2)
@@ -181,6 +184,7 @@ model Booking {
   client                 User          @relation("ClientBookings", fields: [clientId], references: [id])
   photographer           Photographer  @relation("PhotographerBookings", fields: [photographerId], references: [userId])
   concept                Concept       @relation(fields: [conceptId], references: [id])
+  package                ConceptPackage? @relation(fields: [packageId], references: [id])
   review                 Review?
   schedules              PhotographerSchedule[]
 

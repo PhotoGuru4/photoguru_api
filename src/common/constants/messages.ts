@@ -19,6 +19,9 @@ export const MESSAGES = {
     FETCH_SUCCESS: 'Concepts fetched successfully',
     NOT_FOUND: 'Concept not found',
     INVALID_PAGINATION_CURSOR: 'Invalid pagination cursor',
+    PACKAGE_NOT_FOUND: 'Package not found in this concept',
+    FAILED_TO_SEND_EMAIL_TO_PHOTOGRAPHER:
+      'Failed to send email to photographer',
   },
   DASHBOARD: {
     FETCH_SUCCESS: 'Dashboard data fetched successfully',
@@ -34,6 +37,18 @@ export const MESSAGES = {
     COMPLETED: 'Booking marked as completed',
     NOT_FOUND: 'Booking not found',
     UNAUTHORIZED: 'You are not authorized to perform this action',
+    FETCH_SCHEDULES_SUCCESS: 'Photographer schedules fetched successfully',
+    PACKAGES_FETCHED: 'Packages fetched successfully',
+    ONLY_CONFIRMED_BOOKINGS_CAN_BE_COMPLETED:
+      'Only confirmed bookings can be completed',
+    FAILED_TO_SEND_EMAIL_TO_CUSTOMER: 'Failed to send email to customer',
+    NO_AVAILABLE_SCHEDULE_SLOT: 'No available schedule slot for this time',
+    ONLY_PENDING_BOOKINGS_CAN_BE_RESPONDED:
+      'Only pending bookings can be responded to',
+  },
+  PHOTOGRAPHER: {
+    NOT_FOUND: 'Photographer not found',
+    AVAILABLE_SLOTS_FETCHED: 'Available slots fetched successfully',
   },
   CHAT: {
     ROOM_CREATED: 'Chat room created successfully',
