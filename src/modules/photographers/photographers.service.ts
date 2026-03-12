@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { BookingStatus } from '@prisma/client';
 import { MESSAGES } from 'src/common/constants/messages';
+import { TIME } from 'src/common/constants/time.constants';
+import { getDateRange } from 'src/common/helpers/date.helper';
 
 export interface GeneratedSlot {
   startTime: string;
@@ -21,12 +23,12 @@ export class PhotographersService {
     const pkg = await this.prisma.conceptPackage.findUnique({
       where: { id: packageId },
     });
+
     if (!pkg) throw new NotFoundException(MESSAGES.CONCEPT.PACKAGE_NOT_FOUND);
-    const durationInMinutes = pkg.estimatedDuration || 60;
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const durationInMinutes =
+      pkg.estimatedDuration || TIME.DEFAULT_SLOT_DURATION_MINUTES;
+    const { startOfDay, endOfDay } = getDateRange(date);
 
     const existingBookings = await this.prisma.booking.findMany({
       where: {
@@ -36,50 +38,40 @@ export class PhotographersService {
       },
       include: { package: true },
     });
-    const WORK_START_HOUR = 5;
-    const WORK_END_HOUR = 18;
+
     const slots: GeneratedSlot[] = [];
+    const durationInMs = durationInMinutes * TIME.MILLISECONDS_PER_MINUTE;
 
     let currentMoment = new Date(startOfDay);
-    currentMoment.setUTCHours(WORK_START_HOUR, 0, 0, 0);
+    currentMoment.setUTCHours(TIME.WORK_HOURS.START, 0, 0, 0);
 
     const workEndTime = new Date(startOfDay);
-    workEndTime.setUTCHours(WORK_END_HOUR, 0, 0, 0);
+    workEndTime.setUTCHours(TIME.WORK_HOURS.END, 0, 0, 0);
 
-    while (
-      currentMoment.getTime() + durationInMinutes * 60000 <=
-      workEndTime.getTime()
-    ) {
+    while (currentMoment.getTime() + durationInMs <= workEndTime.getTime()) {
       const slotStart = new Date(currentMoment);
-      const slotEnd = new Date(
-        currentMoment.getTime() + durationInMinutes * 60000,
-      );
+      const slotEnd = new Date(currentMoment.getTime() + durationInMs);
 
       const isOverlapped = existingBookings.some((booking) => {
         const bStart = new Date(booking.bookingDate);
-        const bDuration = booking.package?.estimatedDuration || 60;
-        const bEnd = new Date(bStart.getTime() + bDuration * 60000);
+        const bDuration =
+          booking.package?.estimatedDuration ||
+          TIME.DEFAULT_SLOT_DURATION_MINUTES;
+        const bDurationInMs = bDuration * TIME.MILLISECONDS_PER_MINUTE;
+        const bEnd = new Date(bStart.getTime() + bDurationInMs);
+
         return slotStart < bEnd && slotEnd > bStart;
       });
 
       slots.push({
-        startTime: this.formatTimeToHHmm(slotStart),
-        endTime: this.formatTimeToHHmm(slotEnd),
+        startTime: slotStart.toISOString(),
+        endTime: slotEnd.toISOString(),
         isAvailable: !isOverlapped,
       });
-      currentMoment = new Date(
-        currentMoment.getTime() + durationInMinutes * 60000,
-      );
+
+      currentMoment = new Date(currentMoment.getTime() + durationInMs);
     }
 
     return slots;
-  }
-
-  private formatTimeToHHmm(date: Date): string {
-    return (
-      date.getUTCHours().toString().padStart(2, '0') +
-      ':' +
-      date.getUTCMinutes().toString().padStart(2, '0')
-    );
   }
 }

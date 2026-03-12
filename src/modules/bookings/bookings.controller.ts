@@ -29,8 +29,8 @@ export class BookingsController {
   @Post()
   @ApiOperation({ summary: 'Create a new booking request' })
   async create(@Req() req: RequestWithUser, @Body() dto: CreateBookingDto) {
-    const booking = await this.bookingsService.create(req.user.sub, dto);
-    return { message: MESSAGES.BOOKING.CREATED, data: booking };
+    const data = await this.bookingsService.create(req.user.sub, dto);
+    return { message: MESSAGES.BOOKING.CREATED, data };
   }
 
   @Patch(':id/respond')
@@ -41,10 +41,10 @@ export class BookingsController {
     @Body() dto: RespondBookingDto,
   ) {
     if (req.user.role !== UserRole.PHOTOGRAPHER) {
-      throw new ForbiddenException(MESSAGES.BOOKING.UNAUTHORIZED);
+      throw new ForbiddenException(MESSAGES.DASHBOARD.ACCESS_DENIED);
     }
-    const booking = await this.bookingsService.respond(id, req.user.sub, dto);
-    return { message: MESSAGES.BOOKING.RESPONDED, data: booking };
+    const data = await this.bookingsService.respond(id, req.user.sub, dto);
+    return { message: MESSAGES.BOOKING.RESPONDED, data };
   }
 
   @Patch(':id/complete')
@@ -53,14 +53,14 @@ export class BookingsController {
     @Req() req: RequestWithUser,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const booking = await this.bookingsService.complete(id, req.user.sub);
-    return { message: MESSAGES.BOOKING.COMPLETED, data: booking };
+    const data = await this.bookingsService.complete(id, req.user.sub);
+    return { message: MESSAGES.BOOKING.COMPLETED, data };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get booking details' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const booking = await this.bookingsService.findOne(id);
-    return { message: MESSAGES.BOOKING.FETCH_SCHEDULES_SUCCESS, data: booking };
+    const data = await this.bookingsService.findOne(id);
+    return { message: MESSAGES.BOOKING.PACKAGES_FETCHED, data };
   }
 }

@@ -11,6 +11,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { RespondBookingDto } from './dto/respond-booking.dto';
 import { BookingStatus } from '@prisma/client';
 import { MESSAGES } from '../../common/constants/messages';
+import { getStartOfDay } from '../../common/helpers/date.helper';
 
 @Injectable()
 export class BookingsService {
@@ -44,11 +45,10 @@ export class BookingsService {
     if (!selectedPackage)
       throw new BadRequestException(MESSAGES.CONCEPT.PACKAGE_NOT_FOUND);
 
-    const photographerId = concept.photographerId;
     const booking = await this.prisma.booking.create({
       data: {
         clientId: userId,
-        photographerId,
+        photographerId: concept.photographerId,
         conceptId: dto.conceptId,
         packageId: dto.packageId,
         bookingDate: new Date(dto.bookingDate),
@@ -97,7 +97,6 @@ export class BookingsService {
         client: { select: { email: true, fullName: true } },
         concept: true,
         package: true,
-        schedules: true,
       },
     });
 
@@ -110,43 +109,51 @@ export class BookingsService {
         MESSAGES.BOOKING.ONLY_PENDING_BOOKINGS_CAN_BE_RESPONDED,
       );
     }
-    if (dto.status === BookingStatus.CONFIRMED) {
-      const bookingDate = booking.bookingDate;
-      const targetDate = new Date(bookingDate);
-      targetDate.setUTCHours(0, 0, 0, 0);
-      const targetTime = bookingDate.toISOString().slice(11, 16);
 
-      const schedule = await this.prisma.photographerSchedule.findFirst({
-        where: {
-          photographerId,
-          availableDate: targetDate,
-          startTime: { equals: targetTime },
-          bookingId: null,
-        },
-      });
+    const updatedBooking = await this.prisma.$transaction(async (tx) => {
+      if (dto.status === BookingStatus.CONFIRMED) {
+        const targetDate = getStartOfDay(booking.bookingDate);
+        const overlappingBooking = await tx.booking.findFirst({
+          where: {
+            photographerId,
+            bookingDate: booking.bookingDate,
+            status: BookingStatus.CONFIRMED,
+            id: { not: booking.id },
+          },
+        });
 
-      if (!schedule) {
-        throw new BadRequestException(
-          MESSAGES.BOOKING.NO_AVAILABLE_SCHEDULE_SLOT,
-        );
+        if (overlappingBooking) {
+          throw new BadRequestException(
+            MESSAGES.BOOKING.NO_AVAILABLE_SCHEDULE_SLOT,
+          );
+        }
+        await tx.photographerSchedule.create({
+          data: {
+            photographerId,
+            availableDate: targetDate,
+            startTime: booking.bookingDate,
+            bookingId: booking.id,
+          },
+        });
       }
 
-      await this.prisma.photographerSchedule.update({
-        where: { id: schedule.id },
-        data: { bookingId: booking.id },
+      return tx.booking.update({
+        where: { id: bookingId },
+        data: { status: dto.status },
+        include: {
+          client: { select: { email: true, fullName: true } },
+          concept: true,
+          package: true,
+        },
       });
-    }
-    const updated = await this.prisma.booking.update({
-      where: { id: bookingId },
-      data: { status: dto.status },
-      include: {
-        client: { select: { email: true, fullName: true } },
-        concept: true,
-        package: true,
-      },
     });
+
     this.mailService
-      .sendBookingStatusToCustomer(booking.client.email, updated, dto.status)
+      .sendBookingStatusToCustomer(
+        booking.client.email,
+        updatedBooking,
+        dto.status,
+      )
       .catch((err) => {
         this.logger.error(
           MESSAGES.BOOKING.FAILED_TO_SEND_EMAIL_TO_CUSTOMER,
@@ -154,7 +161,7 @@ export class BookingsService {
         );
       });
 
-    return updated;
+    return updatedBooking;
   }
 
   async complete(bookingId: number, userId: number) {
