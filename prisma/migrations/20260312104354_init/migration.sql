@@ -126,6 +126,8 @@ CREATE TABLE "bookings" (
     "client_id" INTEGER NOT NULL,
     "photographer_id" INTEGER NOT NULL,
     "concept_id" INTEGER NOT NULL,
+    "package_id" INTEGER,
+    "address" VARCHAR(255),
     "booking_date" TIMESTAMP(3) NOT NULL,
     "status" "BookingStatus" NOT NULL DEFAULT 'PENDING',
     "total_price" DECIMAL(12,2),
@@ -222,6 +224,9 @@ ALTER TABLE "bookings" ADD CONSTRAINT "bookings_photographer_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_concept_id_fkey" FOREIGN KEY ("concept_id") REFERENCES "concepts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "bookings" ADD CONSTRAINT "bookings_package_id_fkey" FOREIGN KEY ("package_id") REFERENCES "concept_packages"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_booking_id_fkey" FOREIGN KEY ("booking_id") REFERENCES "bookings"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

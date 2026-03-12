@@ -487,6 +487,7 @@ export class ConceptsService {
         thumbnailUrl: concept.thumbnailUrl,
         minPrice,
         maxPrice,
+        photographerId: concept.photographerId,
       },
     };
   }
@@ -494,6 +495,7 @@ export class ConceptsService {
   async getConceptPackages(id: number) {
     const packages = await this.prisma.conceptPackage.findMany({
       where: { conceptId: id },
+      include: { locations: true },
       orderBy: { price: 'asc' },
     });
 
