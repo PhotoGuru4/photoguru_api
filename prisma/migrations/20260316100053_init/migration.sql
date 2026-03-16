@@ -83,7 +83,7 @@ CREATE TABLE "concept_packages" (
     "concept_id" INTEGER NOT NULL,
     "tier" "ConceptTier" NOT NULL DEFAULT 'BASIC',
     "price" DECIMAL(12,2) NOT NULL,
-    "description" TEXT,
+    "benefit" TEXT[],
     "estimated_duration" INTEGER,
 
     CONSTRAINT "concept_packages_pkey" PRIMARY KEY ("id")

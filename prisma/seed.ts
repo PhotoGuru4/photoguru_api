@@ -88,7 +88,7 @@ async function main() {
   const c6 = await prisma.user.create({
     data: {
       fullName: 'Mai Lan',
-      email: 'mailan@gmail.com',
+      email: 'tramhuynhcutehotme@gmail.com',
       password,
       role: UserRole.CUSTOMER,
       avatarUrl: `${baseUrl}/client6`,
@@ -386,8 +386,8 @@ async function main() {
   });
   const pu3 = await prisma.user.create({
     data: {
-      fullName: 'Hiep',
-      email: 'hiep@photo.com',
+      fullName: 'Tram Huynh',
+      email: 'tram.huynh26@student.passerellesnumeriques.org',
       password,
       role: UserRole.PHOTOGRAPHER,
       avatarUrl: `${baseUrl}/photographer3`,
@@ -1070,7 +1070,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 15000000,
             estimatedDuration: 240,
-            description: '4 hours, 1 location',
+            benefit:['4 hours', '1 location'],
             locations: {
               create: [
                 {
@@ -1084,7 +1084,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 45000000,
             estimatedDuration: 720,
-            description: 'Full day, 3 locations',
+            benefit: ['Full day', '3 locations'],
             locations: {
               create: [
                 {
@@ -1119,7 +1119,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 3000000,
             estimatedDuration: 90,
-            description: 'Night shoot, 1 costume',
+            benefit: ['Night shoot', '1 costume'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Phúc Lợi' },
@@ -1130,7 +1130,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 6500000,
             estimatedDuration: 180,
-            description: 'Night shoot, 3 costumes, props',
+            benefit: ['Night shoot', '3 costumes', 'Props'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
@@ -1161,7 +1161,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1500000,
             estimatedDuration: 60,
-            description: 'Standard studio headshot',
+            benefit: ['Standard studio headshot'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Vân' },
@@ -1172,7 +1172,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 3500000,
             estimatedDuration: 120,
-            description: 'Creative portrait with makeup',
+            benefit: ['Creative portrait with makeup'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
@@ -1203,7 +1203,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 8000000,
             estimatedDuration: 180,
-            description: 'Studio editorial',
+            benefit: ['Studio editorial'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
@@ -1214,7 +1214,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 18000000,
             estimatedDuration: 300,
-            description: 'Outdoor luxury location',
+            benefit: ['Outdoor luxury location'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
@@ -1245,7 +1245,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 2500000,
             estimatedDuration: 120,
-            description: 'Trekking path shoot',
+            benefit: ['Trekking path shoot'],
             locations: {
               create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' }],
             },
@@ -1254,7 +1254,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 5500000,
             estimatedDuration: 240,
-            description: 'Peak mountain sunset shoot',
+            benefit: ['Peak mountain sunset shoot'],
             locations: {
               create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phan Thiết' }],
             },
@@ -1283,7 +1283,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 6000000,
             estimatedDuration: 120,
-            description: 'Downtown skyscrapers',
+            benefit: ['Downtown skyscrapers'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Long Biên' },
@@ -1294,7 +1294,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 12000000,
             estimatedDuration: 240,
-            description: 'Private luxury building access',
+            benefit: ['Private luxury building access'],
             locations: {
               create: [{ province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' }],
             },
@@ -1323,7 +1323,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1800000,
             estimatedDuration: 90,
-            description: 'Public park setting',
+            benefit: ['Public park setting'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
@@ -1334,7 +1334,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4000000,
             estimatedDuration: 150,
-            description: 'Private resort garden',
+            benefit: ['Private resort garden'],
             locations: {
               create: [{ province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' }],
             },
@@ -1362,7 +1362,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 5000000,
             estimatedDuration: 120,
-            description: 'Gym/Stadium shoot',
+            benefit: ['Gym/Stadium shoot'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
@@ -1373,7 +1373,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 9500000,
             estimatedDuration: 180,
-            description: 'Professional action coverage',
+            benefit: ['Professional action coverage'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Minh Thạnh' }],
             },
@@ -1402,7 +1402,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 7500000,
             estimatedDuration: 180,
-            description: 'Forest shoot with smoke props',
+            benefit: ['Forest shoot with smoke props'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Long Hòa' }],
             },
@@ -1411,7 +1411,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 14000000,
             estimatedDuration: 300,
-            description: 'Full conceptual fairy tale theme',
+            benefit: ['Full conceptual fairy tale theme'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Xã Thanh An' }],
             },
@@ -1440,7 +1440,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 3500000,
             estimatedDuration: 120,
-            description: '5 dishes, studio',
+            benefit: ['5 dishes', 'studio'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Ba Đình' },
@@ -1451,7 +1451,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 8000000,
             estimatedDuration: 240,
-            description: 'Full menu, on-site restaurant',
+            benefit: ['Full menu', 'on-site restaurant'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Hoàn Kiếm' },
@@ -1482,7 +1482,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 2000000,
             estimatedDuration: 120,
-            description: 'Temple ruins shoot',
+            benefit: ['Temple ruins shoot'],
             locations: {
               create: [
                 { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
@@ -1493,7 +1493,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4500000,
             estimatedDuration: 240,
-            description: 'Island & ruins adventure',
+            benefit: ['Island & ruins adventure'],
             locations: {
               create: [{ province: 'Tỉnh Khánh Hòa', ward: 'Xã Khánh Vĩnh' }],
             },
@@ -1522,7 +1522,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 5500000,
             estimatedDuration: 180,
-            description: '1 outfit, idol makeup',
+            benefit: ['1 outfit', 'idol makeup'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường An Hải' },
@@ -1533,7 +1533,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 12000000,
             estimatedDuration: 300,
-            description: '3 outfits, music video style',
+            benefit: ['3 outfits', 'music video style'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Thanh Khê' },
@@ -1564,7 +1564,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1200000,
             estimatedDuration: 60,
-            description: 'Nature macro shoot',
+            benefit: ['Nature macro shoot'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
@@ -1575,7 +1575,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 2800000,
             estimatedDuration: 120,
-            description: 'Jewelry/Product macro',
+            benefit: ['Jewelry/Product macro'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Hiệp' }],
             },
@@ -1604,7 +1604,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 7000000,
             estimatedDuration: 120,
-            description: 'Static shots, sunset',
+            benefit: ['Static shots', 'sunset'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' },
@@ -1615,7 +1615,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 15000000,
             estimatedDuration: 240,
-            description: 'Rolling shots, night drive',
+            benefit: ['Rolling shots', 'night drive'],
             locations: {
               create: [
                 {
@@ -1649,7 +1649,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 2200000,
             estimatedDuration: 90,
-            description: '35mm Film style',
+            benefit: ['35mm Film style'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Ô Chợ Dừa' },
@@ -1660,7 +1660,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4800000,
             estimatedDuration: 150,
-            description: 'Old Quarter exploration',
+            benefit: ['Old Quarter exploration'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Xã Yên Xuân' },
@@ -1691,7 +1691,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 5000000,
             estimatedDuration: 60,
-            description: 'Landscape photos',
+            benefit: ['Landscape photos'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
@@ -1702,7 +1702,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 11000000,
             estimatedDuration: 120,
-            description: 'Commercial video & photo',
+            benefit: ['Commercial video & photo'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Hòa Cường' },
@@ -1732,7 +1732,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1500000,
             estimatedDuration: 120,
-            description: 'Styling basics',
+            benefit: ['Styling basics'],
             locations: {
               create: [
                 {
@@ -1746,7 +1746,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 3800000,
             estimatedDuration: 240,
-            description: 'Pro lighting & styling',
+            benefit: ['Pro lighting & styling'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Trừ Văn Thố' },
@@ -1777,7 +1777,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 12000000,
             estimatedDuration: 300,
-            description: 'Half day, local hills',
+            benefit: ['Half day, local hills'],
             locations: {
               create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Phú Thuỷ' }],
             },
@@ -1786,7 +1786,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 28000000,
             estimatedDuration: 600,
-            description: 'Full day, remote resort',
+            benefit: ['Full day, remote resort'],
             locations: {
               create: [{ province: 'Tỉnh Lâm Đồng', ward: 'Phường Hàm Thắng' }],
             },
@@ -1814,7 +1814,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 3000000,
             estimatedDuration: 180,
-            description: 'Home visit shoot',
+            benefit: ['Home visit shoot'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Hồng Hà' },
@@ -1825,7 +1825,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 6500000,
             estimatedDuration: 300,
-            description: 'Full studio setup at home',
+            benefit: ['Full studio setup at home'],
             locations: {
               create: [{ province: 'Thành phố Hà Nội', ward: 'Phường Tây Hồ' }],
             },
@@ -1854,7 +1854,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 2500000,
             estimatedDuration: 90,
-            description: 'Detail shots only',
+            benefit: ['Detail shots only'],
             locations: {
               create: [
                 {
@@ -1868,7 +1868,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 5500000,
             estimatedDuration: 180,
-            description: 'Showcase & action',
+            benefit: ['Showcase & action'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
@@ -1899,7 +1899,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1500000,
             estimatedDuration: 60,
-            description: 'Home garden shoot',
+            benefit: ['Home garden shoot'],
             locations: {
               create: [{ province: 'Tỉnh Đồng Nai', ward: 'Phường Đồng Xoài' }],
             },
@@ -1908,7 +1908,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 3200000,
             estimatedDuration: 120,
-            description: 'Botanical garden session',
+            benefit: ['Botanical garden session'],
             locations: {
               create: [{ province: 'Tỉnh Đồng Nai', ward: 'Phường Biên Hòa' }],
             },
@@ -1937,7 +1937,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 6500000,
             estimatedDuration: 240,
-            description: 'Single exposure stars',
+            benefit: ['Single exposure stars'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Cẩm Lệ' },
@@ -1948,7 +1948,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 13000000,
             estimatedDuration: 480,
-            description: 'Deep sky & tracking',
+            benefit: ['Deep sky & tracking'],
             locations: {
               create: [{ province: 'Thành phố Đà Nẵng', ward: 'Phường An Khê' }],
             },
@@ -1977,7 +1977,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4500000,
             estimatedDuration: 120,
-            description: 'Club gig coverage',
+            benefit: ['Club gig coverage'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Phú Thượng' },
@@ -1988,7 +1988,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 12000000,
             estimatedDuration: 300,
-            description: 'Festival stage coverage',
+            benefit: ['Festival stage coverage'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Phường Thanh Liệt' },
@@ -2019,7 +2019,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 5000000,
             estimatedDuration: 120,
-            description: 'Basic studio setup',
+            benefit: ['Basic studio setup'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú An' },
@@ -2030,7 +2030,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 9500000,
             estimatedDuration: 180,
-            description: 'Luxury hotel session',
+            benefit: ['Luxury hotel session'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Phú Lợi' }],
             },
@@ -2059,7 +2059,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4000000,
             estimatedDuration: 180,
-            description: 'Street parade coverage',
+            benefit: ['Street parade coverage'],
             locations: {
               create: [{ province: 'Tỉnh Quảng Ninh', ward: 'Phường Hà Tu' }],
             },
@@ -2068,7 +2068,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 10000000,
             estimatedDuration: 480,
-            description: 'Full cultural documentary',
+            benefit: ['Full cultural documentary'],
             locations: {
               create: [
                 { province: 'Tỉnh Quảng Ninh', ward: 'Phường Bãi Cháy' },
@@ -2099,7 +2099,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 8500000,
             estimatedDuration: 240,
-            description: 'Simple composite',
+            benefit: ['Simple composite'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Hải Châu' },
@@ -2110,7 +2110,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 20000000,
             estimatedDuration: 480,
-            description: 'Advanced photomanipulation',
+            benefit: ['Advanced photomanipulation'],
             locations: {
               create: [
                 { province: 'Thành phố Đà Nẵng', ward: 'Phường Sơn Trà' },
@@ -2141,7 +2141,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 1800000,
             estimatedDuration: 90,
-            description: 'Classic 90s vibes',
+            benefit: ['Classic 90s vibes'],
             locations: {
               create: [
                 {
@@ -2155,7 +2155,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 3500000,
             estimatedDuration: 150,
-            description: 'Themed retro set',
+            benefit: ['Themed retro set'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Chánh Phú Hòa' }],
             },
@@ -2183,7 +2183,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 15000000,
             estimatedDuration: 180,
-            description: 'Shallow reef session',
+            benefit: ['Shallow reef session'],
             locations: {
               create: [
                 { province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Nha Trang' },
@@ -2194,7 +2194,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 35000000,
             estimatedDuration: 300,
-            description: 'Deep ocean diving session',
+            benefit: ['Deep ocean diving session'],
             locations: {
               create: [{ province: 'Tỉnh Khánh Hòa', ward: 'Phường Bắc Cam Ranh' }],
             },
@@ -2223,7 +2223,7 @@ async function main() {
             tier: ConceptTier.BASIC,
             price: 2000000,
             estimatedDuration: 90,
-            description: 'Candid backyard play',
+            benefit: ['Candid backyard play'],
             locations: {
               create: [{ province: 'Thành phố Hà Nội', ward: 'Xã Đại Thanh' }],
             },
@@ -2232,7 +2232,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 4500000,
             estimatedDuration: 180,
-            description: 'Professional studio fun set',
+            benefit: ['Professional studio fun set'],
             locations: {
               create: [
                 { province: 'Thành phố Hà Nội', ward: 'Xã Nam Phù' },
@@ -2263,7 +2263,7 @@ async function main() {
             tier: ConceptTier.STANDARD,
             price: 6000000,
             estimatedDuration: 120,
-            description: 'Studio headshots',
+            benefit: ['Studio headshots'],
             locations: {
               create: [
                 { province: 'Thành phố Hồ Chí Minh', ward: 'Xã Dầu Tiếng' },
@@ -2274,7 +2274,7 @@ async function main() {
             tier: ConceptTier.PREMIUM,
             price: 15000000,
             estimatedDuration: 300,
-            description: 'On-site lifestyle branding',
+            benefit: ['On-site lifestyle branding'],
             locations: {
               create: [{ province: 'Thành phố Hồ Chí Minh', ward: 'Phường Bình Dương' }],
             },
@@ -2591,49 +2591,6 @@ async function main() {
       comment: 'Perfect wedding photos, highly recommended!',
     },
   });
-  await prisma.review.create({
-    data: {
-      bookingId: b3.id,
-      rating: 4,
-      comment: 'Great portrait work, very professional.',
-    },
-  });
-  await prisma.review.create({
-    data: {
-      bookingId: b7.id,
-      rating: 5,
-      comment: 'Captured family moments beautifully.',
-    },
-  });
-  await prisma.review.create({
-    data: {
-      bookingId: b12.id,
-      rating: 5,
-      comment: 'Amazing studio experience.',
-    },
-  });
-  await prisma.review.create({
-    data: {
-      bookingId: b2.id,
-      rating: 4,
-      comment: 'Stunning aerial views.',
-    },
-  });
-  await prisma.review.create({
-    data: {
-      bookingId: b5.id,
-      rating: 3,
-      comment: 'Good but could be better lighting.',
-    },
-  });
-  await prisma.review.create({
-    data: {
-      bookingId: b8.id,
-      rating: 5,
-      comment: 'Vibrant festival captures.',
-    },
-  });
-
   console.log('--- Seeding 30 Schedules ---');
   await prisma.photographerSchedule.create({
     data: { photographerId: p1.userId, availableDate: new Date('2025-05-20') },
