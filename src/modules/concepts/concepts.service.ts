@@ -37,46 +37,57 @@ export class ConceptsService {
     return Buffer.from(JSON.stringify(data)).toString('base64');
   }
 
-  private buildSingleLocationPrioritySql(
+  private buildPrioritySql(
     province: string | null,
     ward: string | null,
-  ) {
+  ): Prisma.Sql {
     if (province && ward) {
       return Prisma.sql`
-        MAX(CASE 
-          WHEN loc.ward = ${ward} AND loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
-          WHEN loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
-          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
-        END)
+        MAX(
+          CASE 
+            WHEN pkg_loc.ward = ${ward} AND pkg_loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
+            WHEN pkg_loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+            ELSE ${RECOMMENDATION_PRIORITY.OTHERS}
+          END
+        )
       `;
     }
     if (province) {
       return Prisma.sql`
-        MAX(CASE 
-          WHEN loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
-          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
-        END)
+        MAX(
+          CASE 
+            WHEN pkg_loc.province = ${province} THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+            ELSE ${RECOMMENDATION_PRIORITY.OTHERS}
+          END
+        )
       `;
     }
     return Prisma.sql`${RECOMMENDATION_PRIORITY.OTHERS}`;
   }
 
-  private buildArrayLocationPrioritySql(provinces: string[], wards: string[]) {
+  private buildArrayPrioritySql(
+    provinces: string[],
+    wards: string[],
+  ): Prisma.Sql {
     if (provinces.length > 0 && wards.length > 0) {
       return Prisma.sql`
-        MAX(CASE 
-          WHEN loc.ward IN (${Prisma.join(wards)}) AND loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
-          WHEN loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
-          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
-        END)
+        MAX(
+          CASE 
+            WHEN pkg_loc.ward IN (${Prisma.join(wards)}) AND pkg_loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.WARD_MATCH}
+            WHEN pkg_loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+            ELSE ${RECOMMENDATION_PRIORITY.OTHERS}
+          END
+        )
       `;
     }
     if (provinces.length > 0) {
       return Prisma.sql`
-        MAX(CASE 
-          WHEN loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
-          ELSE ${RECOMMENDATION_PRIORITY.OTHERS} 
-        END)
+        MAX(
+          CASE 
+            WHEN pkg_loc.province IN (${Prisma.join(provinces)}) THEN ${RECOMMENDATION_PRIORITY.PROVINCE_MATCH}
+            ELSE ${RECOMMENDATION_PRIORITY.OTHERS}
+          END
+        )
       `;
     }
     return Prisma.sql`${RECOMMENDATION_PRIORITY.OTHERS}`;
@@ -143,28 +154,27 @@ export class ConceptsService {
           ? Prisma.sql`ORDER BY priority DESC, "minPrice" DESC, id ASC`
           : Prisma.sql`ORDER BY priority DESC, id ASC`;
 
-    const priorityQuery = this.buildSingleLocationPrioritySql(
-      targetProvince,
-      targetWard,
-    );
+    const prioritySql = this.buildPrioritySql(targetProvince, targetWard);
 
     const concepts = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
       WITH ConceptData AS (
         SELECT 
-          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.id, 
+          c.name, 
+          c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
           u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
-          ${priorityQuery} as priority
+          ${prioritySql} as priority
         FROM concepts c
         JOIN photographers p ON c.photographer_id = p.user_id
         JOIN users u ON p.user_id = u.id
         JOIN categories cat ON c.category_id = cat.id
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
-        LEFT JOIN concept_locations loc ON c.id = loc.concept_id
+        LEFT JOIN concept_package_locations pkg_loc ON cp.id = pkg_loc.package_id
         WHERE 1=1 ${searchCondition}
         GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
@@ -180,8 +190,30 @@ export class ConceptsService {
     let items: ConceptItem[] = [];
     if (rawItems.length > 0) {
       const conceptIds = rawItems.map((c) => c.id);
-      const locations = await this.prisma.conceptLocation.findMany({
-        where: { conceptId: { in: conceptIds } },
+
+      const packageLocations =
+        await this.prisma.conceptPackageLocation.findMany({
+          where: {
+            package: {
+              conceptId: { in: conceptIds },
+            },
+          },
+          include: {
+            package: { select: { conceptId: true } },
+          },
+        });
+
+      const locationsByConcept = new Map<number, any[]>();
+      packageLocations.forEach((pl) => {
+        const conceptId = pl.package.conceptId;
+        if (!locationsByConcept.has(conceptId)) {
+          locationsByConcept.set(conceptId, []);
+        }
+        locationsByConcept.get(conceptId)!.push({
+          province: pl.province,
+          ward: pl.ward,
+          addressDetail: pl.addressDetail,
+        });
       });
 
       items = rawItems.map((item) => ({
@@ -195,13 +227,7 @@ export class ConceptsService {
         photographerAvatar: item.photographerAvatar,
         categoryName: item.categoryName,
         priority: Number(item.priority),
-        locations: locations
-          .filter((l) => l.conceptId === item.id)
-          .map((l) => ({
-            province: l.province,
-            ward: l.ward,
-            addressDetail: l.addressDetail,
-          })),
+        locations: locationsByConcept.get(item.id) || [],
       }));
     }
 
@@ -243,7 +269,7 @@ export class ConceptsService {
       `;
     }
 
-    const priorityQuery = this.buildSingleLocationPrioritySql(
+    const prioritySql = this.buildPrioritySql(
       user?.province || null,
       user?.ward || null,
     );
@@ -251,20 +277,22 @@ export class ConceptsService {
     const concepts = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
       WITH ConceptData AS (
         SELECT 
-          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.id, 
+          c.name, 
+          c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
           u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
-          ${priorityQuery} as priority
+          ${prioritySql} as priority
         FROM concepts c
         JOIN photographers p ON c.photographer_id = p.user_id
         JOIN users u ON p.user_id = u.id
         JOIN categories cat ON c.category_id = cat.id
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
-        LEFT JOIN concept_locations loc ON c.id = loc.concept_id
+        LEFT JOIN concept_package_locations pkg_loc ON cp.id = pkg_loc.package_id
         GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
       SELECT * FROM ConceptData
@@ -310,8 +338,11 @@ export class ConceptsService {
       include: {
         category: true,
         photos: true,
-        locations: true,
-        packages: true,
+        packages: {
+          include: {
+            locations: true,
+          },
+        },
         photographer: {
           include: {
             user: {
@@ -327,6 +358,17 @@ export class ConceptsService {
     const prices = concept.packages.map((p) => Number(p.price));
     const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+    const allLocations = concept.packages.flatMap((pkg) =>
+      pkg.locations.map((l) => ({
+        province: l.province,
+        ward: l.ward,
+        addressDetail: l.addressDetail,
+      })),
+    );
+    const uniqueLocations = Array.from(
+      new Map(allLocations.map((l) => [`${l.province}|${l.ward}`, l])).values(),
+    );
 
     const data: ConceptDetailResponse = {
       id: concept.id,
@@ -348,15 +390,11 @@ export class ConceptsService {
         id: pkg.id,
         tier: pkg.tier,
         price: Number(pkg.price),
-        description: pkg.description,
+        benefit: pkg.benefit,
         estimatedDuration: pkg.estimatedDuration,
       })),
       photos: concept.photos.map((p) => ({ id: p.id, imageUrl: p.imageUrl })),
-      locations: concept.locations.map((l) => ({
-        province: l.province,
-        ward: l.ward,
-        addressDetail: l.addressDetail,
-      })),
+      locations: uniqueLocations,
     };
 
     return { message: MESSAGES.CONCEPT.FETCH_SUCCESS, data };
@@ -365,14 +403,27 @@ export class ConceptsService {
   async findRelated(id: number, query: GetRelatedConceptsDto) {
     const { limit = PAGINATION_CONFIG.DEFAULT_LIMIT, cursor } = query;
 
-    const base = await this.prisma.concept.findUnique({
+    const baseConcept = await this.prisma.concept.findUnique({
       where: { id },
-      select: { locations: { select: { province: true, ward: true } } },
+      select: {
+        packages: {
+          select: {
+            locations: { select: { province: true, ward: true } },
+          },
+        },
+      },
     });
-    if (!base) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
 
-    const baseProvinces = base.locations.map((l) => l.province);
-    const baseWards = base.locations.map((l) => l.ward);
+    if (!baseConcept) throw new BadRequestException(MESSAGES.CONCEPT.NOT_FOUND);
+
+    const baseProvinces = baseConcept.packages.flatMap((p) =>
+      p.locations.map((l) => l.province),
+    );
+    const baseWards = baseConcept.packages.flatMap((p) =>
+      p.locations.map((l) => l.ward),
+    );
+    const uniqueProvinces = [...new Set(baseProvinces)];
+    const uniqueWards = [...new Set(baseWards)];
 
     const parsedCursor = this.parseCursor(cursor);
     const lastId = parsedCursor?.id ?? null;
@@ -388,28 +439,30 @@ export class ConceptsService {
       `;
     }
 
-    const priorityQuery = this.buildArrayLocationPrioritySql(
-      baseProvinces,
-      baseWards,
+    const prioritySql = this.buildArrayPrioritySql(
+      uniqueProvinces,
+      uniqueWards,
     );
 
     const related = await this.prisma.$queryRaw<RawConceptRecommendation[]>`
       WITH ConceptData AS (
         SELECT 
-          c.id, c.name, c.thumbnail_url as "thumbnailUrl", 
+          c.id, 
+          c.name, 
+          c.thumbnail_url as "thumbnailUrl", 
           c.photographer_id as "photographerId",
           u.full_name as "photographerName",
           u.avatar_url as "photographerAvatar",
           cat.name as "categoryName",
           COALESCE(MIN(cp.price), 0) as "minPrice",
           COALESCE(MAX(cp.price), 0) as "maxPrice",
-          ${priorityQuery} as priority
+          ${prioritySql} as priority
         FROM concepts c
         JOIN photographers p ON c.photographer_id = p.user_id
         JOIN users u ON p.user_id = u.id
         JOIN categories cat ON c.category_id = cat.id
         LEFT JOIN concept_packages cp ON c.id = cp.concept_id
-        LEFT JOIN concept_locations loc ON c.id = loc.concept_id
+        LEFT JOIN concept_package_locations pkg_loc ON cp.id = pkg_loc.package_id
         WHERE c.id != ${id}
         GROUP BY c.id, c.name, c.thumbnail_url, c.photographer_id, u.full_name, u.avatar_url, cat.name
       )
@@ -454,9 +507,8 @@ export class ConceptsService {
     const concept = await this.prisma.concept.findUnique({
       where: { id },
       include: {
-        packages: { select: { price: true } },
-        locations: {
-          select: { province: true, ward: true, addressDetail: true },
+        packages: {
+          include: { locations: true },
         },
       },
     });
@@ -466,17 +518,6 @@ export class ConceptsService {
     const prices = concept.packages.map((p) => Number(p.price));
     const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-
-    const firstLocation = concept.locations[0];
-    const locationString = firstLocation
-      ? [
-          firstLocation.addressDetail,
-          firstLocation.ward,
-          firstLocation.province,
-        ]
-          .filter(Boolean)
-          .join(', ')
-      : 'N/A';
 
     return {
       message: MESSAGES.CONCEPT.FETCH_SUCCESS,

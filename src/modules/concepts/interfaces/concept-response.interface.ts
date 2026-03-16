@@ -70,7 +70,7 @@ export interface ConceptDetailResponse {
     id: number;
     tier: ConceptTier;
     price: number;
-    description: string | null;
+    benefit: string[];
     estimatedDuration: number | null;
   }[];
   photos: {
