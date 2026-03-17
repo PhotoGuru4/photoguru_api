@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { GetRecommendationsDto } from './dto/get-recommendations.dto';
 import { GetConceptsDto } from './dto/get-concepts.dto';
@@ -8,7 +13,7 @@ import {
   RECOMMENDATION_PRIORITY,
   SORT_ORDER,
 } from 'src/common/constants/global';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 import { GetRelatedConceptsDto } from './dto/get-related-concepts.dto';
 import {
   RawConceptRecommendation,
@@ -17,6 +22,9 @@ import {
   CursorData,
   ConceptDetailResponse,
 } from './interfaces/concept-response.interface';
+import { getStartOfMonth } from 'src/common/helpers/date.helper';
+import { CreateConceptDto, PackageLocationDto } from './dto/create-concept.dto';
+import { GetPhotographerConceptsDto } from './dto/get-photographer-concepts.dto';
 
 @Injectable()
 export class ConceptsService {
@@ -91,6 +99,20 @@ export class ConceptsService {
       `;
     }
     return Prisma.sql`${RECOMMENDATION_PRIORITY.OTHERS}`;
+  }
+  async getCategories() {
+    const categories = await this.prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        thumbnailUrl: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+    return {
+      message: MESSAGES.CONCEPT.CATEGORY,
+      data: categories,
+    };
   }
 
   async findAll(userId: number, query: GetConceptsDto) {
@@ -546,6 +568,129 @@ export class ConceptsService {
         ...pkg,
         price: Number(pkg.price),
       })),
+    };
+  }
+  async getPhotographerConcepts(
+    userId: number,
+    query: GetPhotographerConceptsDto,
+  ) {
+    const { page = 1, limit = PAGINATION_CONFIG.DEFAULT_LIMIT } = query;
+    const skip = (page - 1) * limit;
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException(MESSAGES.AUTH.ACCESS_DENIED);
+    }
+    const total = await this.prisma.concept.count({
+      where: { photographerId: userId },
+    });
+    const concepts = await this.prisma.concept.findMany({
+      where: { photographerId: userId },
+      include: {
+        category: true,
+        packages: true,
+        photos: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    });
+    const now = new Date();
+    const startOfMonth = getStartOfMonth(now.getFullYear(), now.getMonth());
+    const allConcepts = await this.prisma.concept.findMany({
+      where: { photographerId: userId },
+    });
+    const thisMonthConcepts = allConcepts.filter(
+      (c) => c.createdAt >= startOfMonth,
+    ).length;
+    const uniqueCategories = new Set(allConcepts.map((c) => c.categoryId)).size;
+
+    return {
+      message: MESSAGES.CONCEPT.FETCH_SUCCESS,
+      data: {
+        stats: {
+          totalConcepts: total,
+          thisMonth: thisMonthConcepts,
+          categories: uniqueCategories,
+        },
+        items: concepts.map((c) => ({
+          id: c.id,
+          name: c.name,
+          categoryName: c.category.name,
+          createdAt: c.createdAt,
+          thumbnailUrl: c.thumbnailUrl,
+          photos: c.photos.map((p) => p.imageUrl),
+          packagesCount: c.packages.length,
+        })),
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+    };
+  }
+  async createConcept(userId: number, dto: CreateConceptDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== UserRole.PHOTOGRAPHER) {
+      throw new ForbiddenException(MESSAGES.AUTH.ACCESS_DENIED);
+    }
+
+    const locationSet = new Set<string>();
+    const uniqueLocations: PackageLocationDto[] = [];
+
+    dto.packages.forEach((pkg) => {
+      pkg.locations.forEach((loc) => {
+        const key = `${loc.province}|${loc.ward}`;
+        if (!locationSet.has(key)) {
+          locationSet.add(key);
+          uniqueLocations.push(loc);
+        }
+      });
+    });
+
+    const createdConcept = await this.prisma.$transaction(async (tx) => {
+      return await tx.concept.create({
+        data: {
+          photographerId: userId,
+          categoryId: dto.categoryId,
+          name: dto.name,
+          description: dto.description,
+          thumbnailUrl: dto.thumbnailUrl,
+          photos: {
+            create: dto.photoUrls.map((url) => ({ imageUrl: url })),
+          },
+          locations: {
+            create: uniqueLocations,
+          },
+          packages: {
+            create: dto.packages.map((pkg) => ({
+              tier: pkg.tier,
+              price: pkg.price,
+              estimatedDuration: pkg.estimatedDuration,
+              benefit: pkg.benefit,
+              locations: {
+                create: pkg.locations,
+              },
+            })),
+          },
+        },
+        include: {
+          photos: true,
+          locations: true,
+          packages: {
+            include: {
+              locations: true,
+            },
+          },
+        },
+      });
+    });
+
+    return {
+      message: MESSAGES.CONCEPT.CREATED,
+      data: createdConcept,
     };
   }
 }
