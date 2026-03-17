@@ -22,6 +22,8 @@ export const MESSAGES = {
     PACKAGE_NOT_FOUND: 'Package not found in this concept',
     FAILED_TO_SEND_EMAIL_TO_PHOTOGRAPHER:
       'Failed to send email to photographer',
+    CREATED: 'Concept created successfully',
+    CATEGORY: 'Categories fetched successfully',
   },
   DASHBOARD: {
     FETCH_SUCCESS: 'Dashboard data fetched successfully',
