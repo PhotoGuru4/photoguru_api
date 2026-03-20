@@ -650,44 +650,46 @@ export class ConceptsService {
       });
     });
 
-    const createdConcept = await this.prisma.$transaction(async (tx) => {
-      return await tx.concept.create({
-        data: {
-          photographerId: userId,
-          categoryId: dto.categoryId,
-          name: dto.name,
-          description: dto.description,
-          thumbnailUrl: dto.thumbnailUrl,
-          photos: {
-            create: dto.photoUrls.map((url) => ({ imageUrl: url })),
-          },
-          locations: {
-            create: uniqueLocations,
-          },
-          packages: {
-            create: dto.packages.map((pkg) => ({
-              tier: pkg.tier,
-              price: pkg.price,
-              estimatedDuration: pkg.estimatedDuration,
-              benefit: pkg.benefit,
-              locations: {
-                create: pkg.locations,
-              },
-            })),
-          },
-        },
-        include: {
-          photos: true,
-          locations: true,
-          packages: {
-            include: {
-              locations: true,
+    const createdConcept = await this.prisma.$transaction(
+      async (tx) => {
+        return await tx.concept.create({
+          data: {
+            photographerId: userId,
+            categoryId: dto.categoryId,
+            name: dto.name,
+            description: dto.description,
+            thumbnailUrl: dto.thumbnailUrl,
+            photos: {
+              create: dto.photoUrls.map((url) => ({ imageUrl: url })),
+            },
+            locations: {
+              create: uniqueLocations,
+            },
+            packages: {
+              create: dto.packages.map((pkg) => ({
+                tier: pkg.tier,
+                price: pkg.price,
+                estimatedDuration: pkg.estimatedDuration,
+                benefit: pkg.benefit,
+                locations: {
+                  create: pkg.locations,
+                },
+              })),
             },
           },
-        },
-      });
-    });
-
+          include: {
+            photos: true,
+            locations: true,
+            packages: {
+              include: {
+                locations: true,
+              },
+            },
+          },
+        });
+      },
+      { timeout: 30000 },
+    );
     return {
       message: MESSAGES.CONCEPT.CREATED,
       data: createdConcept,
