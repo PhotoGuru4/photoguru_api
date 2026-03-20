@@ -651,31 +651,42 @@ export class ConceptsService {
     });
 
     const createdConcept = await this.prisma.$transaction(async (tx) => {
-      return await tx.concept.create({
+      const concept = await tx.concept.create({
         data: {
           photographerId: userId,
           categoryId: dto.categoryId,
           name: dto.name,
           description: dto.description,
           thumbnailUrl: dto.thumbnailUrl,
-          photos: {
-            create: dto.photoUrls.map((url) => ({ imageUrl: url })),
-          },
-          locations: {
-            create: uniqueLocations,
-          },
-          packages: {
-            create: dto.packages.map((pkg) => ({
-              tier: pkg.tier,
-              price: pkg.price,
-              estimatedDuration: pkg.estimatedDuration,
-              benefit: pkg.benefit,
-              locations: {
-                create: pkg.locations,
-              },
-            })),
-          },
         },
+      });
+      await tx.conceptPhoto.createMany({
+        data: dto.photoUrls.map((url) => ({
+          conceptId: concept.id,
+          imageUrl: url,
+        })),
+      });
+
+      await tx.conceptLocation.createMany({
+        data: uniqueLocations.map((loc) => ({ ...loc, conceptId: concept.id })),
+      });
+      for (const pkg of dto.packages) {
+        await tx.conceptPackage.create({
+          data: {
+            conceptId: concept.id,
+            tier: pkg.tier,
+            price: pkg.price,
+            estimatedDuration: pkg.estimatedDuration,
+            benefit: pkg.benefit,
+            locations: {
+              create: pkg.locations,
+            },
+          },
+        });
+      }
+
+      return await tx.concept.findUnique({
+        where: { id: concept.id },
         include: {
           photos: true,
           locations: true,
