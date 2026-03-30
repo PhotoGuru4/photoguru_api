@@ -1068,7 +1068,7 @@ async function main() {
         create: [
           {
             tier: ConceptTier.BASIC,
-            price: 15000000,
+            price: 5000000,
             estimatedDuration: 240,
             benefit:['4 hours', '1 location'],
             locations: {
@@ -1082,7 +1082,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 45000000,
+            price: 8000000,
             estimatedDuration: 720,
             benefit: ['Full day', '3 locations'],
             locations: {
@@ -1128,7 +1128,7 @@ async function main() {
           },
           {
             tier: ConceptTier.STANDARD,
-            price: 6500000,
+            price: 6000000,
             estimatedDuration: 180,
             benefit: ['Night shoot', '3 costumes', 'Props'],
             locations: {
@@ -1212,7 +1212,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 18000000,
+            price: 10000000,
             estimatedDuration: 300,
             benefit: ['Outdoor luxury location'],
             locations: {
@@ -1360,7 +1360,7 @@ async function main() {
         create: [
           {
             tier: ConceptTier.STANDARD,
-            price: 5000000,
+            price: 2000000,
             estimatedDuration: 120,
             benefit: ['Gym/Stadium shoot'],
             locations: {
@@ -1371,7 +1371,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 9500000,
+            price: 4500000,
             estimatedDuration: 180,
             benefit: ['Professional action coverage'],
             locations: {
@@ -1400,7 +1400,7 @@ async function main() {
         create: [
           {
             tier: ConceptTier.STANDARD,
-            price: 7500000,
+            price: 1500000,
             estimatedDuration: 180,
             benefit: ['Forest shoot with smoke props'],
             locations: {
@@ -1409,7 +1409,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 14000000,
+            price: 7000000,
             estimatedDuration: 300,
             benefit: ['Full conceptual fairy tale theme'],
             locations: {
@@ -1531,7 +1531,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 12000000,
+            price: 8000000,
             estimatedDuration: 300,
             benefit: ['3 outfits', 'music video style'],
             locations: {
@@ -1613,7 +1613,7 @@ async function main() {
           },
           {
             tier: ConceptTier.PREMIUM,
-            price: 15000000,
+            price: 9000000,
             estimatedDuration: 240,
             benefit: ['Rolling shots', 'night drive'],
             locations: {
@@ -2297,11 +2297,23 @@ async function main() {
   await prisma.conceptPhoto.create({
     data: { conceptId: con1.id, imageUrl: `${baseUrl}/wedding2` },
   });
+    await prisma.conceptPhoto.create({
+    data: { conceptId: con1.id, imageUrl: `${baseUrl}/wedding3` },
+  });
+      await prisma.conceptPhoto.create({
+    data: { conceptId: con1.id, imageUrl: `${baseUrl}/wedding4` },
+  });
   await prisma.conceptPhoto.create({
-    data: { conceptId: con2.id, imageUrl: `${baseUrl}/tokyo1` },
+    data: { conceptId: con2.id, imageUrl: `${baseUrl}/night1` },
+  });
+    await prisma.conceptPhoto.create({
+    data: { conceptId: con2.id, imageUrl: `${baseUrl}/night2` },
   });
   await prisma.conceptPhoto.create({
     data: { conceptId: con3.id, imageUrl: `${baseUrl}/port1` },
+  });
+    await prisma.conceptPhoto.create({
+    data: { conceptId: con3.id, imageUrl: `${baseUrl}/port2` },
   });
   await prisma.conceptPhoto.create({
     data: { conceptId: con4.id, imageUrl: `${baseUrl}/fash1` },
@@ -2391,195 +2403,106 @@ async function main() {
       clientId: c1.id,
       photographerId: p1.userId,
       conceptId: con1.id,
-      bookingDate: new Date('2026-02-25'),
+      bookingDate: new Date('2026-03-29'),
       status: BookingStatus.COMPLETED,
-      totalPrice: 15000000,
+      totalPrice: 1500000,
       isCompletedByCustomer: true,
     },
   });
   const b2 = await prisma.booking.create({
     data: {
-      clientId: c2.id,
-      photographerId: p2.userId,
-      conceptId: con2.id,
-      bookingDate: new Date('2026-02-27'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 800000,
-    },
-  });
-  const b3 = await prisma.booking.create({
-    data: {
-      clientId: c3.id,
-      photographerId: p3.userId,
-      conceptId: con3.id,
-      bookingDate: new Date('2026-02-10'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 300000,
-      isCompletedByCustomer: true,
-    },
-  });
-  const b4 = await prisma.booking.create({
-    data: {
-      clientId: c4.id,
-      photographerId: p4.userId,
-      conceptId: con4.id,
-      bookingDate: new Date('2026-02-01'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 2500000,
-    },
-  });
-  const b5 = await prisma.booking.create({
-    data: {
-      clientId: c5.id,
-      photographerId: p5.userId,
-      conceptId: con5.id,
-      bookingDate: new Date('2026-02-28'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 600000,
-    },
-  });
-  const b6 = await prisma.booking.create({
-    data: {
-      clientId: c6.id,
-      photographerId: p10.userId,
-      conceptId: con6.id,
-      bookingDate: new Date('2026-02-11'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 1500000,
-    },
-  });
-  const b7 = await prisma.booking.create({
-    data: {
-      clientId: c7.id,
-      photographerId: p8.userId,
-      conceptId: con7.id,
-      bookingDate: new Date('2026-02-05'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 200000,
-      isCompletedByCustomer: true,
-    },
-  });
-  const b8 = await prisma.booking.create({
-    data: {
-      clientId: c8.id,
-      photographerId: p9.userId,
-      conceptId: con8.id,
-      bookingDate: new Date('2026-02-28'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 750000,
-    },
-  });
-  const b9 = await prisma.booking.create({
-    data: {
-      clientId: c9.id,
-      photographerId: p11.userId,
-      conceptId: con9.id,
-      bookingDate: new Date('2026-02-28'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 900000,
-    },
-  });
-  const b10 = await prisma.booking.create({
-    data: {
-      clientId: c10.id,
-      photographerId: p6.userId,
-      conceptId: con10.id,
-      bookingDate: new Date('2026-02-28'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 1100000,
-    },
-  });
-  const b11 = await prisma.booking.create({
-    data: {
-      clientId: c11.id,
-      photographerId: p12.userId,
-      conceptId: con11.id,
-      bookingDate: new Date('2026-02-22'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 450000,
-    },
-  });
-  const b12 = await prisma.booking.create({
-    data: {
-      clientId: c12.id,
-      photographerId: p13.userId,
-      conceptId: con12.id,
-      bookingDate: new Date('2026-02-15'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 300000,
-      isCompletedByCustomer: true,
-    },
-  });
-  const b13 = await prisma.booking.create({
-    data: {
-      clientId: c13.id,
-      photographerId: p14.userId,
-      conceptId: con13.id,
-      bookingDate: new Date('2026-02-14'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 150000,
-    },
-  });
-  const b14 = await prisma.booking.create({
-    data: {
-      clientId: c14.id,
-      photographerId: p15.userId,
-      conceptId: con14.id,
-      bookingDate: new Date('2026-02-28'),
-      status: BookingStatus.CONFIRMED,
-      totalPrice: 1200000,
-    },
-  });
-  const b15 = await prisma.booking.create({
-    data: {
       clientId: c15.id,
       photographerId: p1.userId,
       conceptId: con15.id,
-      bookingDate: new Date('2026-02-27'),
+      bookingDate: new Date('2026-04-01'),
       status: BookingStatus.CONFIRMED,
       totalPrice: 1000000,
     },
   });
-  const b16 = await prisma.booking.create({
+  const b3 = await prisma.booking.create({
     data: {
       clientId: c16.id,
       photographerId: p1.userId,
       conceptId: con16.id,
-      bookingDate: new Date('2026-02-22'),
-      status: BookingStatus.COMPLETED,
-      totalPrice: 25000000,
+      bookingDate: new Date('2026-04-02'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 2000000,
     },
   });
-  const b17 = await prisma.booking.create({
+  const b4 = await prisma.booking.create({
     data: {
       clientId: c2.id,
       photographerId: p1.userId,
       conceptId: con1.id,
-      bookingDate: new Date('2026-03-05T00:00:00.000Z'),
+      bookingDate: new Date('2026-04-16'),
       status: BookingStatus.CONFIRMED,
-      totalPrice: 15500000,
+      totalPrice: 1500000,
       isCompletedByCustomer: true,
     },
   });
-  const b18 = await prisma.booking.create({
+  const b5 = await prisma.booking.create({
     data: {
       clientId: c3.id,
       photographerId: p1.userId,
       conceptId: con1.id,
-      bookingDate: new Date('2026-03-05T03:00:00.000Z'),
+      bookingDate: new Date('2026-04-17'),
       status: BookingStatus.CONFIRMED,
-      totalPrice: 15600000,
+      totalPrice: 1600000,
       isCompletedByCustomer: true,
     },
   });
-  const b19 = await prisma.booking.create({
+  const b6 = await prisma.booking.create({
     data: {
       clientId: c4.id,
       photographerId: p1.userId,
       conceptId: con1.id,
-      bookingDate: new Date('2026-03-05T08:00:00.000Z'),
+      bookingDate: new Date('2026-04-23'),
       status: BookingStatus.CONFIRMED,
-      totalPrice: 16000000,
+      totalPrice: 1600000,
+      isCompletedByCustomer: true,
+    },
+  });
+  const b7 = await prisma.booking.create({
+    data: {
+      clientId: c4.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-04-29'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 1650000,
+      isCompletedByCustomer: true,
+    },
+  });
+    const b8 = await prisma.booking.create({
+    data: {
+      clientId: c4.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-04-26'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 1450000,
+      isCompletedByCustomer: true,
+    },
+  });
+    const b9 = await prisma.booking.create({
+    data: {
+      clientId: c4.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-04-22'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 1150000,
+      isCompletedByCustomer: true,
+    },
+  });
+    const b10 = await prisma.booking.create({
+    data: {
+      clientId: c4.id,
+      photographerId: p1.userId,
+      conceptId: con1.id,
+      bookingDate: new Date('2026-04-21'),
+      status: BookingStatus.CONFIRMED,
+      totalPrice: 1250000,
       isCompletedByCustomer: true,
     },
   });
